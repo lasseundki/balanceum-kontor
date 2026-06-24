@@ -1,0 +1,120 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    function isMember(wsId) {
+      return exists(/databases/$(database)/documents/workspaces/$(wsId)/members/$(request.auth.uid));
+    }
+
+    function memberRole(wsId) {
+      return get(/databases/$(database)/documents/workspaces/$(wsId)/members/$(request.auth.uid)).data.role;
+    }
+
+    function isOwner(wsId) {
+      return memberRole(wsId) == 'owner';
+    }
+
+    function isAdminOrOwner(wsId) {
+      return memberRole(wsId) in ['owner', 'admin'];
+    }
+
+    function isCreator() {
+      return resource.data.createdBy == request.auth.uid;
+    }
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // ── User profiles (users/{uid}) ───────────────────────────────────────────
+    // Nur der Nutzer selbst liest/schreibt sein Profil und seine Workspace-Liste.
+
+    match /users/{uid} {
+      allow read, write: if request.auth.uid == uid;
+
+      match /workspaces/{wsId} {
+        allow read, write: if request.auth.uid == uid;
+      }
+    }
+
+    // ── Invite-Codes (Top-Level, damit Nicht-Mitglieder joinen können) ────────
+    // Wird beim Erstellen einer Einladung zusätzlich zum workspace/invites-Eintrag
+    // angelegt. Jeder eingeloggte Nutzer kann einen Code lesen (Code selbst ist
+    // das Geheimnis). Nur Admins/Owner des enthaltenen Workspaces dürfen schreiben.
+
+    match /inviteCodes/{code} {
+      allow read: if signedIn();
+      allow create: if signedIn() && isAdminOrOwner(request.resource.data.workspaceId);
+      allow delete: if signedIn() && isAdminOrOwner(resource.data.workspaceId);
+      allow update: if false;
+    }
+
+    // ── Workspaces ────────────────────────────────────────────────────────────
+
+    match /workspaces/{wsId} {
+      allow read:   if isMember(wsId);
+      allow create: if signedIn();           // jeder eingeloggte Nutzer kann einen Workspace erstellen
+      allow update: if isAdminOrOwner(wsId);
+      allow delete: if isOwner(wsId);
+
+      // Echte Mitglieder (Firebase-Accounts)
+      match /members/{uid} {
+        allow read:   if isMember(wsId);
+        allow create, update: if isAdminOrOwner(wsId);
+        allow delete: if isAdminOrOwner(wsId) || request.auth.uid == uid; // selbst austreten erlaubt
+      }
+
+      // Label-Mitglieder (kein Account, nur Name)
+      match /labelMembers/{memberId} {
+        allow read:  if isMember(wsId);
+        allow write: if isMember(wsId);
+      }
+
+      // Einladungen (workspace-intern, für Mitglieder sichtbar)
+      match /invites/{inviteId} {
+        allow read:   if isMember(wsId);
+        allow create: if isAdminOrOwner(wsId);
+        allow delete: if isAdminOrOwner(wsId);
+        allow update: if false;
+      }
+
+      // ── Finanzdaten ───────────────────────────────────────────────────────
+
+      match /transactions/{txId} {
+        allow read:   if isMember(wsId);
+        allow create: if isMember(wsId);
+        allow update: if isMember(wsId);
+        allow delete: if isMember(wsId) && (isCreator() || isAdminOrOwner(wsId));
+      }
+
+      match /recurringTransactions/{rtId} {
+        allow read:   if isMember(wsId);
+        allow create: if isMember(wsId);
+        allow update: if isMember(wsId);
+        allow delete: if isMember(wsId) && (isCreator() || isAdminOrOwner(wsId));
+      }
+
+      match /categories/{catId} {
+        allow read:  if isMember(wsId);
+        allow write: if isMember(wsId);
+      }
+
+      match /paymentMethods/{pmId} {
+        allow read:  if isMember(wsId);
+        allow write: if isMember(wsId);
+      }
+
+      match /budgets/{budgetId} {
+        allow read:  if isMember(wsId);
+        allow write: if isMember(wsId);
+      }
+
+      match /templates/{templateId} {
+        allow read:  if isMember(wsId);
+        allow write: if isMember(wsId);
+      }
+    }
+  }
+}

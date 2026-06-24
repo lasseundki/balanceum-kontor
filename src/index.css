@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors — Life Pro Max Palette */
+  --color-bg: #FDFCFA;
+  --color-bg-subtle: #F5F3EF;
+  --color-bg-muted: #ECEAE5;
+  --color-surface: #FFFFFF;
+  --color-border: #E2DED7;
+  --color-border-strong: #C9C4BB;
+  --color-text: #1C1916;
+  --color-text-secondary: #6E6860;
+  --color-text-muted: #A09890;
+  --color-text-inverse: #FFFFFF;
+  --color-accent: #7BA89B;
+  --color-accent-hover: #5F8E80;
+  --color-accent-light: #E0EDEA;
+  --color-accent-dark: #3D6B5E;
+  --color-success: #7BA89B;
+  --color-success-light: #E0EDEA;
+  --color-warning: #C9A05A;
+  --color-warning-light: #F5EDDA;
+  --color-error: #B87B72;
+  --color-error-light: #F2E4E2;
+  --color-info: #7A9EC4;
+  --color-info-light: #DDE8F2;
+  --color-chart-1: #7BA89B;
+  --color-chart-2: #7A9EC4;
+  --color-chart-3: #C9A05A;
+  --color-chart-4: #A891C4;
+  --color-chart-5: #C47A91;
+  --color-chart-6: #7AB4C4;
+
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Lora', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow: 0 1px 3px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 1px 3px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-xl: 0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.05);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #F5F3EF;
+    color: #1C1916;
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] { -moz-appearance: textfield; }
+}
+
+@layer utilities {
+  .pb-nav {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Font size scaling */
+html.text-sm-scale { font-size: 14px; }
+html.text-lg-scale { font-size: 18px; }
+
+/* High contrast overrides */
+html.high-contrast body { color: #000000; background-color: #FFFFFF; }
+html.high-contrast .text-text-secondary { color: #1C1916 !important; }
+html.high-contrast .text-text-muted { color: #3D3830 !important; }
+html.high-contrast .border-border { border-color: #6E6860 !important; }
+html.high-contrast .bg-bg-subtle { background-color: #ECEAE5 !important; }
+html.high-contrast .bg-surface { background-color: #FFFFFF !important; }
+html.high-contrast .bg-bg-muted { background-color: #E0DED8 !important; }
+html.high-contrast .text-accent { color: #3D6B5E !important; }
+html.high-contrast .text-accent-dark { color: #2A4D42 !important; }
