@@ -1,0 +1,44 @@
+{
+  "common": {
+    "save": "Speichern", "saving": "Speichern...", "cancel": "Abbrechen",
+    "back": "← Zurück", "loading": "Laden...", "add": "Hinzufügen",
+    "edit": "Bearbeiten", "delete": "Löschen", "confirm": "Bestätigen",
+    "all": "Alle", "none": "Keine", "apply": "Anwenden",
+    "income": "Einnahmen", "expense": "Ausgaben", "balance": "Saldo",
+    "amount": "Betrag", "date": "Datum", "note": "Notiz",
+    "category": "Kategorie", "name": "Name", "close": "Schließen"
+  },
+  "auth": {
+    "tagline": "Finanzen im Blick.",
+    "loginTitle": "Anmelden",
+    "registerTitle": "Konto erstellen",
+    "email": "E-Mail", "password": "Passwort",
+    "displayName": "Name", "displayNamePlaceholder": "Wie heißt du?",
+    "rememberMe": "Angemeldet bleiben",
+    "forgotPassword": "Passwort vergessen?",
+    "login": "Anmelden", "loggingIn": "Anmelden...",
+    "register": "Registrieren", "registering": "Konto wird erstellt...",
+    "noAccount": "Noch kein Konto?",
+    "hasAccount": "Bereits ein Konto?",
+    "resetTitle": "Passwort zurücksetzen",
+    "resetSent": "E-Mail wurde gesendet. Bitte prüfe deinen Posteingang.",
+    "resetButton": "Link senden",
+    "wrongCredentials": "E-Mail oder Passwort ist falsch.",
+    "emailNotFound": "Kein Konto mit dieser E-Mail gefunden.",
+    "tooManyRequests": "Zu viele Versuche. Bitte warte kurz.",
+    "emailInUse": "Diese E-Mail ist bereits registriert."
+  },
+  "workspace": {
+    "personal": "Persönlich", "family": "Familie", "business": "Geschäft",
+    "switch": "Kontor wechseln", "create": "Neues Kontor erstellen",
+    "myKontor": "Mein Kontor",
+    "roles": {
+      "owner": "Eigentümer", "admin": "Admin",
+      "member": "Mitglied", "viewer": "Betrachter"
+    }
+  },
+  "nav": {
+    "home": "Start", "list": "Liste", "analytics": "Analyse",
+    "cards": "Karten", "settings": "Einstellungen"
+  }
+}

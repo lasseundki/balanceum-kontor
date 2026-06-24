@@ -1,0 +1,44 @@
+{
+  "common": {
+    "save": "Save", "saving": "Saving...", "cancel": "Cancel",
+    "back": "← Back", "loading": "Loading...", "add": "Add",
+    "edit": "Edit", "delete": "Delete", "confirm": "Confirm",
+    "all": "All", "none": "None", "apply": "Apply",
+    "income": "Income", "expense": "Expenses", "balance": "Balance",
+    "amount": "Amount", "date": "Date", "note": "Note",
+    "category": "Category", "name": "Name", "close": "Close"
+  },
+  "auth": {
+    "tagline": "Your finances, in order.",
+    "loginTitle": "Sign in",
+    "registerTitle": "Create account",
+    "email": "Email", "password": "Password",
+    "displayName": "Name", "displayNamePlaceholder": "What's your name?",
+    "rememberMe": "Keep me signed in",
+    "forgotPassword": "Forgot password?",
+    "login": "Sign in", "loggingIn": "Signing in...",
+    "register": "Register", "registering": "Creating account...",
+    "noAccount": "No account yet?",
+    "hasAccount": "Already have an account?",
+    "resetTitle": "Reset password",
+    "resetSent": "Email sent. Please check your inbox.",
+    "resetButton": "Send link",
+    "wrongCredentials": "Incorrect email or password.",
+    "emailNotFound": "No account found with this email.",
+    "tooManyRequests": "Too many attempts. Please wait a moment.",
+    "emailInUse": "This email is already registered."
+  },
+  "workspace": {
+    "personal": "Personal", "family": "Family", "business": "Business",
+    "switch": "Switch workspace", "create": "Create new workspace",
+    "myKontor": "My Kontor",
+    "roles": {
+      "owner": "Owner", "admin": "Admin",
+      "member": "Member", "viewer": "Viewer"
+    }
+  },
+  "nav": {
+    "home": "Home", "list": "List", "analytics": "Analytics",
+    "cards": "Cards", "settings": "Settings"
+  }
+}
