@@ -1,16 +1,16 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+import { initializeFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: 'AIzaSyB-Q84p6oRGkrasR8wPxwSTkKjuU3qiyyI',
+  authDomain: 'balanceum-kontor.firebaseapp.com',
+  projectId: 'balanceum-kontor',
+  storageBucket: 'balanceum-kontor.firebasestorage.app',
+  messagingSenderId: '769755178241',
+  appId: '1:769755178241:web:7424d51df7eb7a3a742700',
 }
 
 const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
-export const db = getFirestore(app)
+export const db = initializeFirestore(app, { ignoreUndefinedProperties: true })
