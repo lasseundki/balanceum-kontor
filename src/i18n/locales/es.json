@@ -1,0 +1,47 @@
+{
+  "common": {
+    "save": "Guardar", "saving": "Guardando...", "cancel": "Cancelar",
+    "back": "← Volver", "loading": "Cargando...", "add": "Agregar",
+    "edit": "Editar", "delete": "Eliminar", "confirm": "Confirmar",
+    "all": "Todos", "none": "Ninguno", "apply": "Aplicar",
+    "income": "Ingresos", "expense": "Gastos", "balance": "Saldo",
+    "amount": "Monto", "date": "Fecha", "note": "Nota",
+    "category": "Categoría", "name": "Nombre", "close": "Cerrar"
+  },
+  "auth": {
+    "tagline": "Tus finanzas, en orden.",
+    "loginTitle": "Iniciar sesión",
+    "registerTitle": "Crear cuenta",
+    "email": "Correo electrónico", "password": "Contraseña",
+    "displayName": "Nombre", "displayNamePlaceholder": "¿Cómo te llamas?",
+    "rememberMe": "Mantenerme conectado",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "login": "Iniciar sesión", "loggingIn": "Iniciando sesión...",
+    "register": "Registrarse", "registering": "Creando cuenta...",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "resetTitle": "Restablecer contraseña",
+    "resetSent": "Correo enviado. Revisa tu bandeja de entrada.",
+    "resetButton": "Enviar enlace",
+    "wrongCredentials": "Correo o contraseña incorrectos.",
+    "emailNotFound": "No se encontró ninguna cuenta con este correo.",
+    "tooManyRequests": "Demasiados intentos. Por favor espera un momento.",
+    "emailInUse": "Este correo ya está registrado.",
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
+    "passwordHint": "Mínimo 6 caracteres",
+    "registerFailed": "Error al crear la cuenta. Inténtalo de nuevo."
+  },
+  "workspace": {
+    "personal": "Personal", "family": "Familia", "business": "Negocio",
+    "switch": "Cambiar espacio", "create": "Crear nuevo espacio",
+    "myKontor": "Mi Kontor",
+    "roles": {
+      "owner": "Propietario", "admin": "Admin",
+      "member": "Miembro", "viewer": "Espectador"
+    }
+  },
+  "nav": {
+    "home": "Inicio", "list": "Lista", "analytics": "Análisis",
+    "cards": "Tarjetas", "settings": "Ajustes"
+  }
+}

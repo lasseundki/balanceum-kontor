@@ -26,7 +26,10 @@
     "wrongCredentials": "Incorrect email or password.",
     "emailNotFound": "No account found with this email.",
     "tooManyRequests": "Too many attempts. Please wait a moment.",
-    "emailInUse": "This email is already registered."
+    "emailInUse": "This email is already registered.",
+    "passwordTooShort": "Password must be at least 6 characters.",
+    "passwordHint": "At least 6 characters",
+    "registerFailed": "Could not create account. Please try again."
   },
   "workspace": {
     "personal": "Personal", "family": "Family", "business": "Business",
