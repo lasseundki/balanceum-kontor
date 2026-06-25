@@ -163,7 +163,29 @@
     "clickHint": "Toca una barra para ver detalles",
     "reset": "Restablecer",
     "selectCategory": "Selecciona una categoría",
-    "noCategoryData": "Sin datos para esta categoría"
+    "noCategoryData": "Sin datos para esta categoría",
+    "forecast": "Pronóstico",
+    "forecastExpense": "Gastos proy.",
+    "forecastIncome": "Ingresos proy.",
+    "forecastBalance": "Saldo proy.",
+    "forecastMonthly": "Prom. Mes",
+    "forecastFixed": "Costos fijos",
+    "forecastVariable": "Costos variables",
+    "forecastBasis": "Base de cálculo",
+    "forecastHint": "Transparente = proyección",
+    "forecastBasedOn": "Basado en {{n}} meses completados",
+    "forecastNoData": "Datos insuficientes — se necesitan al menos 2 meses",
+    "forecastCurrentOnly": "El pronóstico solo está disponible para el año actual",
+    "actual": "Real",
+    "projected": "Pronóstico"
+  },
+  "search": {
+    "placeholder": "Buscar...",
+    "hint": "Introduce al menos 2 caracteres",
+    "txCount": "transacciones cargadas",
+    "noResults": "Sin resultados",
+    "results": "resultado(s)",
+    "loadOlder": "Cargar anteriores:"
   },
   "nav": {
     "home": "Inicio", "list": "Lista", "analytics": "Análisis",

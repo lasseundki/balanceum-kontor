@@ -163,7 +163,29 @@
     "clickHint": "Tap a bar for details",
     "reset": "Reset",
     "selectCategory": "Select a category",
-    "noCategoryData": "No data for this category"
+    "noCategoryData": "No data for this category",
+    "forecast": "Forecast",
+    "forecastExpense": "Proj. Expenses",
+    "forecastIncome": "Proj. Income",
+    "forecastBalance": "Proj. Balance",
+    "forecastMonthly": "Avg. Month",
+    "forecastFixed": "Fixed costs",
+    "forecastVariable": "Variable costs",
+    "forecastBasis": "Calculation basis",
+    "forecastHint": "Faded = projection",
+    "forecastBasedOn": "Based on {{n}} completed months",
+    "forecastNoData": "Not enough data — need at least 2 completed months",
+    "forecastCurrentOnly": "Forecast is only available for the current year",
+    "actual": "Actual",
+    "projected": "Forecast"
+  },
+  "search": {
+    "placeholder": "Search...",
+    "hint": "Enter at least 2 characters",
+    "txCount": "transactions loaded",
+    "noResults": "No results found",
+    "results": "result(s)",
+    "loadOlder": "Load older:"
   },
   "nav": {
     "home": "Home", "list": "List", "analytics": "Analytics",

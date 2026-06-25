@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { ChevronDown, User, Home, Briefcase } from 'lucide-react'
+import { ChevronDown, User, Home, Briefcase, Search } from 'lucide-react'
 import { useWorkspace } from '../../contexts/WorkspaceContext'
 import { useAuth } from '../../contexts/AuthContext'
 import WorkspaceSwitcherSheet from './WorkspaceSwitcherSheet'
+import SearchOverlay from '../SearchOverlay'
 import type { WorkspaceType } from '../../types'
 
 function wsIcon(type: WorkspaceType) {
@@ -25,6 +26,7 @@ export default function Header() {
   const { activeWorkspace } = useWorkspace()
   const { user } = useAuth()
   const [showSwitcher, setShowSwitcher] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
 
   if (!activeWorkspace) return null
 
@@ -51,17 +53,28 @@ export default function Header() {
             <ChevronDown size={15} className="text-text-muted flex-shrink-0" />
           </button>
 
-          {/* Profile avatar */}
-          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
-            {user?.photoURL
-              ? <img src={user.photoURL} className="w-full h-full rounded-full object-cover" alt="" />
-              : <span className="text-xs font-bold text-text-inverse">{userInitials}</span>
-            }
+          <div className="flex items-center gap-2">
+            {/* Search */}
+            <button
+              onClick={() => setShowSearch(true)}
+              className="p-2 rounded-lg hover:bg-bg-subtle transition-colors text-text-muted hover:text-text"
+            >
+              <Search size={18} />
+            </button>
+
+            {/* Profile avatar */}
+            <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+              {user?.photoURL
+                ? <img src={user.photoURL} className="w-full h-full rounded-full object-cover" alt="" />
+                : <span className="text-xs font-bold text-text-inverse">{userInitials}</span>
+              }
+            </div>
           </div>
         </div>
       </header>
 
       {showSwitcher && <WorkspaceSwitcherSheet onClose={() => setShowSwitcher(false)} />}
+      {showSearch && <SearchOverlay onClose={() => setShowSearch(false)} />}
     </>
   )
 }

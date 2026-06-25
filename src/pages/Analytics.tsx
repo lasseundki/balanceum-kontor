@@ -2,12 +2,12 @@ import { useState, useMemo } from 'react'
 import { ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  LineChart, Line, Legend,
+  LineChart, Line, Legend, ComposedChart, ReferenceLine,
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { de, enUS, es } from 'date-fns/locale'
-import { useYearTransactions, useCategories } from '../hooks/useWorkspaceFirestore'
+import { useYearTransactions, useCategories, useRecurringTransactions } from '../hooks/useWorkspaceFirestore'
 import { useWorkspace } from '../contexts/WorkspaceContext'
 import { fmt, fmtShort, fmtCurrency, fmtDateShort } from '../lib/formatters'
 import { getCurrencyInfo } from '../lib/currency'
@@ -15,7 +15,7 @@ import type { Transaction } from '../types'
 
 const CHART_COLORS = ['#B87B72', '#7A9EC4', '#C9A05A', '#A891C4', '#C47A91', '#7AB4C4', '#6E9E8A', '#C4A87A']
 
-type AnalyticsTab = 'year' | 'month' | 'category'
+type AnalyticsTab = 'year' | 'month' | 'category' | 'forecast'
 type YearChartType = 'stacked' | 'line'
 
 function ea(tx: Transaction) {
@@ -83,6 +83,7 @@ export default function Analytics() {
   const [year, setYear] = useState(now.getFullYear())
   const { transactions, loading } = useYearTransactions(year)
   const categories = useCategories()
+  const recurring = useRecurringTransactions()
 
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null)
   const [excludeFixed, setExcludeFixed] = useState(false)
@@ -234,10 +235,41 @@ export default function Analytics() {
 
   const periodLabel = selectedMonth !== null ? MONTHS[selectedMonth] : t('analytics.total')
 
+  const isCurrentYear = year === now.getFullYear()
+  const currentMonth = now.getMonth()
+
+  // Forecast calculations (only meaningful for current year)
+  const completedMonths = isCurrentYear ? currentMonth : 12
+  const completedIncome = monthData.slice(0, completedMonths).filter(m => m.income > 0)
+  const avgMonthlyIncome = completedIncome.length > 0
+    ? completedIncome.reduce((s, m) => s + m.income, 0) / completedIncome.length
+    : 0
+
+  const projMonthlyExpense = monthlyFixedAvg + avgVariableExpense
+  const remainingMonths = isCurrentYear ? Math.max(0, 11 - currentMonth) : 0
+
+  const actualExpenseToDate = monthData.slice(0, completedMonths + 1).reduce((s, m) => s + m.expense, 0)
+  const actualIncomeToDate = monthData.slice(0, completedMonths + 1).reduce((s, m) => s + m.income, 0)
+
+  const projectedYearExpense = actualExpenseToDate + remainingMonths * projMonthlyExpense
+  const projectedYearIncome = actualIncomeToDate + remainingMonths * avgMonthlyIncome
+  const projectedYearBalance = projectedYearIncome - projectedYearExpense
+
+  const forecastChartData = useMemo(() => MONTHS.map((name, m) => {
+    const d = monthData[m]
+    const isActual = !isCurrentYear || m <= currentMonth
+    return {
+      name,
+      actual: isActual ? d.expense : undefined,
+      projected: isActual ? undefined : projMonthlyExpense,
+    }
+  }), [MONTHS, monthData, isCurrentYear, currentMonth, projMonthlyExpense])
+
   const TABS: { key: AnalyticsTab; label: string }[] = [
     { key: 'year', label: t('analytics.yearView') },
     { key: 'month', label: t('analytics.monthlyOverview') },
     { key: 'category', label: t('analytics.categoryView') },
+    { key: 'forecast', label: t('analytics.forecast') },
   ]
 
   const StackedTooltip = ({ active, payload, label }: {
@@ -574,6 +606,121 @@ export default function Analytics() {
                 {fmt(viewMonthTxs.filter(t => t.isExtraordinary).reduce((s, t) => s + ea(t), 0), baseCurrency)}
               </span>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* ═══ FORECAST TAB ═══ */}
+      {tab === 'forecast' && (
+        <div className="space-y-4">
+          {!isCurrentYear ? (
+            <div className="text-center py-16 text-text-muted">
+              <p className="text-3xl mb-3">📅</p>
+              <p className="text-sm">{t('analytics.forecastCurrentOnly')}</p>
+            </div>
+          ) : completedMonths < 2 ? (
+            <div className="text-center py-16 text-text-muted">
+              <p className="text-3xl mb-3">📊</p>
+              <p className="text-sm">{t('analytics.forecastNoData')}</p>
+            </div>
+          ) : (
+            <>
+              {/* Summary cards */}
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: t('analytics.forecastExpense'), val: projectedYearExpense, color: 'text-error' },
+                  { label: t('analytics.forecastIncome'), val: projectedYearIncome, color: 'text-success' },
+                  { label: t('analytics.forecastBalance'), val: projectedYearBalance, color: projectedYearBalance >= 0 ? 'text-success' : 'text-error' },
+                ].map(({ label, val, color }) => (
+                  <div key={label} className="bg-surface border border-border rounded-lg p-3 text-center">
+                    <p className="text-xs text-text-muted mb-0.5 leading-tight">{label}</p>
+                    <p className={`text-sm font-bold ${color}`}>{fmtShort(val, baseCurrency)}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Forecast chart */}
+              <div className="bg-surface border border-border rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <h2 className="font-heading text-base font-semibold text-text">{t('analytics.forecast')}</h2>
+                </div>
+                <p className="text-xs text-text-muted mb-3">{year} · {t('analytics.forecastHint')}</p>
+                <ResponsiveContainer width="100%" height={160}>
+                  <ComposedChart data={forecastChartData} barGap={2}>
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#A09890' }} axisLine={false} tickLine={false} />
+                    <YAxis hide />
+                    <Tooltip
+                      formatter={(val) => [fmt(Number(val), baseCurrency), '']}
+                      contentStyle={{ fontSize: 11, border: '1px solid #E2DED7', borderRadius: 8 }}
+                    />
+                    {isCurrentYear && (
+                      <ReferenceLine x={MONTHS[currentMonth]} stroke="#A09890" strokeDasharray="3 3" />
+                    )}
+                    <Bar dataKey="actual" name={t('analytics.actual')} fill="#B87B72" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="projected" name={t('analytics.projected')} fill="#B87B72" fillOpacity={0.3} radius={[3, 3, 0, 0]} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+                <div className="flex gap-4 mt-2 pt-2 border-t border-border">
+                  <div className="flex items-center gap-1.5">
+                    <span className="inline-block w-2.5 h-2.5 rounded-sm bg-error" />
+                    <span className="text-xs text-text-muted">{t('analytics.actual')}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="inline-block w-2.5 h-2.5 rounded-sm bg-error opacity-30" />
+                    <span className="text-xs text-text-muted">{t('analytics.projected')}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Projection basis */}
+              <div className="bg-surface border border-border rounded-xl p-4 space-y-3">
+                <h3 className="font-heading text-sm font-semibold text-text">{t('analytics.forecastBasis')}</h3>
+                <div className="space-y-2">
+                  {[
+                    { label: t('analytics.forecastFixed'), val: monthlyFixedAvg, icon: '↻' },
+                    { label: t('analytics.forecastVariable'), val: avgVariableExpense, icon: '≈' },
+                    { label: t('analytics.forecastMonthly'), val: projMonthlyExpense, icon: '∑', bold: true },
+                  ].map(({ label, val, icon, bold }) => (
+                    <div key={label} className={`flex justify-between items-center ${bold ? 'pt-2 border-t border-border' : ''}`}>
+                      <span className={`text-sm ${bold ? 'font-semibold text-text' : 'text-text-secondary'}`}>
+                        <span className="mr-1.5 text-text-muted">{icon}</span>{label}
+                      </span>
+                      <span className={`text-sm ${bold ? 'font-bold text-error' : 'text-text-secondary'}`}>
+                        {fmt(val, baseCurrency)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-text-muted pt-1">
+                  {t('analytics.forecastBasedOn', { n: completedMonths })}
+                </p>
+              </div>
+
+              {/* Recurring fixed costs list */}
+              {recurring.filter(r => r.type === 'expense').length > 0 && (
+                <div className="bg-surface border border-border rounded-xl overflow-hidden">
+                  <p className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide border-b border-border">
+                    {t('recurring.title')} ({recurring.filter(r => r.type === 'expense').length})
+                  </p>
+                  {recurring.filter(r => r.type === 'expense').map((rt, i) => {
+                    const cat = catMap[rt.categoryId]
+                    return (
+                      <div key={rt.id}>
+                        {i > 0 && <div className="h-px bg-border" />}
+                        <div className="flex items-center gap-3 px-4 py-3">
+                          <span className="text-lg">{cat?.icon ?? '📌'}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-text">{rt.note || cat?.name}</p>
+                            <p className="text-xs text-text-muted">{t(`recurring.${rt.frequency}`)}</p>
+                          </div>
+                          <span className="text-sm font-semibold text-error">{fmt(rt.amount, baseCurrency)}</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
