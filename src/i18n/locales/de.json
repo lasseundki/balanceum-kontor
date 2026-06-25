@@ -53,7 +53,19 @@
     "budgetView": "Budget"
   },
   "transaction": {
-    "unknown": "Buchung"
+    "unknown": "Buchung",
+    "title": "Transaktion",
+    "paymentMethod": "Zahlungsmethode",
+    "forWhom": "Für wen",
+    "extraordinary": "Außergewöhnlich",
+    "gift": "Geschenk",
+    "notePlaceholder": "Kurze Beschreibung..."
+  },
+  "currency": {
+    "select": "Währung wählen",
+    "loading": "Wechselkurs wird geladen...",
+    "error": "Kurs nicht verfügbar — bitte manuell eingeben:",
+    "manualRate": "z.B. 1.08"
   },
   "nav": {
     "home": "Start", "list": "Liste", "analytics": "Analyse",

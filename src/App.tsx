@@ -5,6 +5,7 @@ import { WorkspaceProvider } from './contexts/WorkspaceContext'
 import Header from './components/layout/Header'
 import BottomNav from './components/layout/BottomNav'
 import Dashboard from './pages/Dashboard'
+import AddTransactionModal from './components/modals/AddTransactionModal'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
@@ -27,15 +28,7 @@ function AppLayout() {
         </Routes>
       </main>
       <BottomNav onAdd={() => setShowAdd(true)} />
-      {/* AddTransactionModal kommt hier */}
-      {showAdd && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
-          <div className="bg-surface w-full max-w-lg mx-auto rounded-t-2xl p-6">
-            <p className="text-text font-sans">Transaktion hinzufügen (kommt)</p>
-            <button onClick={() => setShowAdd(false)} className="mt-4 text-sm text-accent">Schließen</button>
-          </div>
-        </div>
-      )}
+      {showAdd && <AddTransactionModal onClose={() => setShowAdd(false)} />}
     </div>
   )
 }

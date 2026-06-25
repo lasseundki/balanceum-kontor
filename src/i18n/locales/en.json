@@ -53,7 +53,19 @@
     "budgetView": "Budget"
   },
   "transaction": {
-    "unknown": "Transaction"
+    "unknown": "Transaction",
+    "title": "Transaction",
+    "paymentMethod": "Payment method",
+    "forWhom": "For whom",
+    "extraordinary": "Extraordinary",
+    "gift": "Gift",
+    "notePlaceholder": "Short description..."
+  },
+  "currency": {
+    "select": "Select currency",
+    "loading": "Loading exchange rate...",
+    "error": "Rate unavailable — enter manually:",
+    "manualRate": "e.g. 1.08"
   },
   "nav": {
     "home": "Home", "list": "List", "analytics": "Analytics",

@@ -7,7 +7,7 @@ import { db } from '../firebase/config'
 import { useWorkspace } from '../contexts/WorkspaceContext'
 import { monthRange, yearRange } from '../lib/formatters'
 import type {
-  Transaction, Category, PaymentMethod, LabelMember,
+  Transaction, Category, PaymentMethod, LabelMember, WorkspaceMember,
   RecurringTransaction, Budget, Template,
 } from '../types'
 
@@ -41,6 +41,18 @@ export function usePaymentMethods() {
     })
   }, [activeWorkspaceId])
   return methods
+}
+
+export function useWorkspaceMembers() {
+  const { activeWorkspaceId } = useWorkspace()
+  const [members, setMembers] = useState<WorkspaceMember[]>([])
+  useEffect(() => {
+    if (!activeWorkspaceId) return
+    return onSnapshot(wsCol(activeWorkspaceId, 'members'), snap => {
+      setMembers(snap.docs.map(d => ({ ...d.data(), uid: d.id } as WorkspaceMember)))
+    })
+  }, [activeWorkspaceId])
+  return members
 }
 
 export function useLabelMembers() {

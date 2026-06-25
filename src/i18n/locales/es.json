@@ -53,7 +53,19 @@
     "budgetView": "Presupuesto"
   },
   "transaction": {
-    "unknown": "Transacción"
+    "unknown": "Transacción",
+    "title": "Transacción",
+    "paymentMethod": "Método de pago",
+    "forWhom": "Para quién",
+    "extraordinary": "Extraordinario",
+    "gift": "Regalo",
+    "notePlaceholder": "Descripción breve..."
+  },
+  "currency": {
+    "select": "Seleccionar moneda",
+    "loading": "Cargando tipo de cambio...",
+    "error": "Tasa no disponible — ingresar manualmente:",
+    "manualRate": "ej. 1.08"
   },
   "nav": {
     "home": "Inicio", "list": "Lista", "analytics": "Análisis",
