@@ -1,10 +1,43 @@
+import { useState } from 'react'
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { WorkspaceProvider } from './contexts/WorkspaceContext'
+import Header from './components/layout/Header'
+import BottomNav from './components/layout/BottomNav'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import './i18n'
+
+function AppLayout() {
+  const [showAdd, setShowAdd] = useState(false)
+
+  return (
+    <div className="max-w-lg mx-auto min-h-screen bg-bg-subtle">
+      <Header />
+      <main className="pb-nav">
+        <Routes>
+          <Route path="/" element={<div className="p-6 font-sans text-text">Dashboard (kommt)</div>} />
+          <Route path="/transactions" element={<div className="p-6 font-sans text-text">Transaktionen (kommt)</div>} />
+          <Route path="/analytics" element={<div className="p-6 font-sans text-text">Analyse (kommt)</div>} />
+          <Route path="/settings" element={<div className="p-6 font-sans text-text">Einstellungen (kommt)</div>} />
+          <Route path="/join" element={<div className="p-6 font-sans text-text">Workspace beitreten (kommt)</div>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      <BottomNav onAdd={() => setShowAdd(true)} />
+      {/* AddTransactionModal kommt hier */}
+      {showAdd && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="bg-surface w-full max-w-lg mx-auto rounded-t-2xl p-6">
+            <p className="text-text font-sans">Transaktion hinzufügen (kommt)</p>
+            <button onClick={() => setShowAdd(false)} className="mt-4 text-sm text-accent">Schließen</button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 function AppRoutes() {
   const { user, loading } = useAuth()
@@ -12,7 +45,12 @@ function AppRoutes() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg-subtle flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+        <div className="text-center">
+          <div className="w-12 h-12 bg-accent rounded-xl mx-auto mb-3 flex items-center justify-center">
+            <span className="font-heading text-xl font-bold text-text-inverse">K</span>
+          </div>
+          <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto mt-3" />
+        </div>
       </div>
     )
   }
@@ -30,14 +68,7 @@ function AppRoutes() {
 
   return (
     <WorkspaceProvider>
-      <Routes>
-        <Route path="/" element={<div className="p-8 font-sans text-text">Dashboard (kommt)</div>} />
-        <Route path="/transactions" element={<div className="p-8 font-sans text-text">Transaktionen (kommt)</div>} />
-        <Route path="/analytics" element={<div className="p-8 font-sans text-text">Analyse (kommt)</div>} />
-        <Route path="/settings" element={<div className="p-8 font-sans text-text">Einstellungen (kommt)</div>} />
-        <Route path="/join" element={<div className="p-8 font-sans text-text">Workspace beitreten (kommt)</div>} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <AppLayout />
     </WorkspaceProvider>
   )
 }
