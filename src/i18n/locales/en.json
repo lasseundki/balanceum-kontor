@@ -104,7 +104,10 @@
     "catTypeIncome": "Income",
     "catTypeBoth": "Both",
     "noCategories": "No categories",
-    "noPaymentMethods": "No payment methods"
+    "noPaymentMethods": "No payment methods",
+    "exportTitle": "Export data",
+    "exportBtn": "Export as CSV",
+    "exporting": "Exporting..."
   },
   "members": {
     "title": "Members",

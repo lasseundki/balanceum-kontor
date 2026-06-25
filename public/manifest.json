@@ -1,0 +1,17 @@
+{
+  "name": "Balanceum Kontor",
+  "short_name": "Kontor",
+  "description": "Workspace-based finance tracker",
+  "start_url": "/balanceum-kontor/",
+  "display": "standalone",
+  "background_color": "#1A1816",
+  "theme_color": "#7BA89B",
+  "icons": [
+    {
+      "src": "/balanceum-kontor/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

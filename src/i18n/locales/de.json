@@ -94,7 +94,10 @@
     "catTypeIncome": "Einnahme",
     "catTypeBoth": "Beides",
     "noCategories": "Keine Kategorien",
-    "noPaymentMethods": "Keine Zahlungsmethoden"
+    "noPaymentMethods": "Keine Zahlungsmethoden",
+    "exportTitle": "Daten exportieren",
+    "exportBtn": "Als CSV exportieren",
+    "exporting": "Wird exportiert..."
   },
   "workspace": {
     "personal": "Persönlich", "family": "Familie", "business": "Geschäft",

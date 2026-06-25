@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LogOut, Plus, Trash2, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { LogOut, Plus, Trash2, Check, ChevronDown, ChevronUp, Download } from 'lucide-react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { updateProfile } from 'firebase/auth'
@@ -13,6 +13,7 @@ import {
   useLabelMembers, useLabelMemberActions,
 } from '../hooks/useWorkspaceFirestore'
 import { fmt } from '../lib/formatters'
+import { exportTransactionsCsv } from '../lib/export'
 import { useWorkspace } from '../contexts/WorkspaceContext'
 import type { CategoryType, TransactionType, Frequency } from '../types'
 
@@ -64,7 +65,7 @@ const FREQUENCIES: Frequency[] = ['monthly', 'weekly', 'yearly', 'daily']
 export default function Settings() {
   const { t, i18n } = useTranslation()
   const { user, logout } = useAuth()
-  const { activeWorkspace } = useWorkspace()
+  const { activeWorkspace, activeWorkspaceId } = useWorkspace()
   const baseCurrency = activeWorkspace?.currency ?? 'EUR'
 
   const categories = useCategories()
@@ -125,6 +126,19 @@ export default function Settings() {
   const [tmplAmount, setTmplAmount] = useState('')
   const [tmplCatId, setTmplCatId] = useState('')
   const [savingTmpl, setSavingTmpl] = useState(false)
+
+  // Export
+  const [exporting, setExporting] = useState(false)
+
+  async function handleExport() {
+    if (!activeWorkspaceId) return
+    setExporting(true)
+    try {
+      await exportTransactionsCsv(activeWorkspaceId, categories, paymentMethods, baseCurrency)
+    } finally {
+      setExporting(false)
+    }
+  }
 
   // Recurring
   const [showAddRec, setShowAddRec] = useState(false)
@@ -613,6 +627,25 @@ export default function Settings() {
               </div>
             )
           })}
+        </div>
+      </section>
+
+      {/* Export */}
+      <section>
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">{t('settings.exportTitle')}</p>
+        <div className="bg-surface border border-border rounded-xl overflow-hidden">
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-bg-subtle transition-colors disabled:opacity-50"
+          >
+            <div className="w-8 h-8 bg-info-light rounded-lg flex items-center justify-center text-info flex-shrink-0">
+              <Download size={16} />
+            </div>
+            <span className="text-sm font-medium text-text flex-1 text-left">
+              {exporting ? t('settings.exporting') : t('settings.exportBtn')}
+            </span>
+          </button>
         </div>
       </section>
 
