@@ -11,11 +11,12 @@ import {
 import { CURRENCIES, fetchExchangeRate } from '../../lib/currency'
 import { fmtCurrency } from '../../lib/formatters'
 import { saveNoteToHistory, getNoteHistory } from '../../lib/noteHistory'
-import type { TransactionType, TransactionParticipants, MemberRefType, Template } from '../../types'
+import type { TransactionType, TransactionParticipants, MemberRefType, Template, Transaction } from '../../types'
 
 interface Props {
   onClose: () => void
   template?: Template
+  editTx?: Transaction
 }
 
 function formatAmountInput(raw: string): string {
@@ -26,7 +27,11 @@ function formatAmountInput(raw: string): string {
   return parts.length > 1 ? `${intPart},${parts[1]}` : intPart
 }
 
-export default function AddTransactionModal({ onClose, template }: Props) {
+function numToGermanAmount(n: number): string {
+  return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+export default function AddTransactionModal({ onClose, template, editTx }: Props) {
   const { t } = useTranslation()
   const { user } = useAuth()
   const { activeWorkspace } = useWorkspace()
@@ -37,23 +42,32 @@ export default function AddTransactionModal({ onClose, template }: Props) {
   const paymentMethods  = usePaymentMethods()
   const labelMembers    = useLabelMembers()
   const wsMembers       = useWorkspaceMembers()
-  const { addTransaction } = useTransactionActions()
+  const { addTransaction, updateTransaction } = useTransactionActions()
 
-  const [type, setType]             = useState<TransactionType>(template?.type ?? 'expense')
-  const [amount, setAmount]         = useState(() => template ? String(template.amount).replace('.', ',') : '')
-  const [date, setDate]             = useState(format(new Date(), 'yyyy-MM-dd'))
-  const [categoryId, setCategoryId] = useState(template?.categoryId ?? '')
-  const [paymentMethodId, setPaymentMethodId] = useState(template?.paymentMethodId ?? '')
-  const [forMembers, setForMembers] = useState<TransactionParticipants | undefined>(undefined)
-  const [note, setNote]             = useState(template?.note ?? '')
+  const [type, setType]             = useState<TransactionType>(editTx?.type ?? template?.type ?? 'expense')
+  const [amount, setAmount]         = useState(() => {
+    if (editTx) return numToGermanAmount(editTx.amount)
+    if (template) return String(template.amount).replace('.', ',')
+    return ''
+  })
+  const [date, setDate]             = useState(() => {
+    if (editTx) return format(new Date(editTx.date), 'yyyy-MM-dd')
+    return format(new Date(), 'yyyy-MM-dd')
+  })
+  const [categoryId, setCategoryId] = useState(editTx?.categoryId ?? template?.categoryId ?? '')
+  const [paymentMethodId, setPaymentMethodId] = useState(editTx?.paymentMethodId ?? template?.paymentMethodId ?? '')
+  const [forMembers, setForMembers] = useState<TransactionParticipants | undefined>(
+    editTx?.forMembers ?? undefined
+  )
+  const [note, setNote]             = useState(editTx?.note ?? template?.note ?? '')
   const [noteSuggestions, setNoteSuggestions] = useState<string[]>([])
-  const [isGift, setIsGift]                     = useState(template?.isGift ?? false)
-  const [isExtraordinary, setIsExtraordinary]   = useState(template?.isExtraordinary ?? false)
+  const [isGift, setIsGift]                     = useState(editTx?.isGift ?? template?.isGift ?? false)
+  const [isExtraordinary, setIsExtraordinary]   = useState(editTx?.isExtraordinary ?? template?.isExtraordinary ?? false)
   const [saving, setSaving]         = useState(false)
 
   // Currency
-  const [currency, setCurrency]           = useState(baseCurrency)
-  const [exchangeRate, setExchangeRate]   = useState(1)
+  const [currency, setCurrency]           = useState(editTx?.currency ?? baseCurrency)
+  const [exchangeRate, setExchangeRate]   = useState(editTx?.exchangeRate ?? 1)
   const [rateLoading, setRateLoading]     = useState(false)
   const [rateError, setRateError]         = useState(false)
   const [manualRate, setManualRate]       = useState('')
@@ -103,7 +117,7 @@ export default function AddTransactionModal({ onClose, template }: Props) {
     setSaving(true)
     if (note.trim()) saveNoteToHistory(note.trim())
     const [y, m, d] = date.split('-').map(Number)
-    await addTransaction({
+    const txData = {
       type,
       amount: parsedAmount,
       currency: isForeign ? currency : undefined,
@@ -116,9 +130,12 @@ export default function AddTransactionModal({ onClose, template }: Props) {
       note: note.trim() || undefined,
       isGift,
       isExtraordinary,
-      createdAt: Date.now(),
-      createdBy: user?.uid ?? '',
-    })
+    }
+    if (editTx) {
+      await updateTransaction(editTx.id, txData)
+    } else {
+      await addTransaction({ ...txData, createdAt: Date.now(), createdBy: user?.uid ?? '' })
+    }
     onClose()
   }
 
@@ -131,7 +148,9 @@ export default function AddTransactionModal({ onClose, template }: Props) {
 
         {/* Header */}
         <div className="sticky top-0 bg-surface border-b border-border px-4 py-3 flex items-center justify-between z-10">
-          <h2 className="font-heading text-lg font-semibold text-text">{t('transaction.title')}</h2>
+          <h2 className="font-heading text-lg font-semibold text-text">
+            {editTx ? t('transaction.editTitle') : t('transaction.title')}
+          </h2>
           <button onClick={onClose} className="p-1.5 rounded-md text-text-muted hover:bg-bg-muted transition-colors">
             <X size={20} />
           </button>

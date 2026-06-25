@@ -55,17 +55,46 @@
   "transaction": {
     "unknown": "Transaction",
     "title": "Transaction",
+    "editTitle": "Edit transaction",
+    "details": "Details",
     "paymentMethod": "Payment method",
     "forWhom": "For whom",
     "extraordinary": "Extraordinary",
     "gift": "Gift",
-    "notePlaceholder": "Short description..."
+    "notePlaceholder": "Short description...",
+    "search": "Search...",
+    "noBookings": "No bookings",
+    "deleted": "Booking deleted",
+    "undoDelete": "Undo",
+    "filterAll": "All",
+    "filterExtraordinary": "Extraordinary",
+    "filterNormal": "Normal",
+    "filterFixed": "Fixed costs",
+    "filterGifts": "Gifts"
   },
   "currency": {
     "select": "Select currency",
     "loading": "Loading exchange rate...",
     "error": "Rate unavailable — enter manually:",
-    "manualRate": "e.g. 1.08"
+    "manualRate": "e.g. 1.08",
+    "allCurrencies": "All currencies",
+    "rateLabel": "Exchange rate"
+  },
+  "settings": {
+    "account": "Account",
+    "categories": "Categories",
+    "paymentMethods": "Payment methods",
+    "language": "Language",
+    "logout": "Sign out",
+    "addCategory": "Add category",
+    "addPaymentMethod": "Add payment method",
+    "newCategoryName": "Category name",
+    "newPaymentMethodName": "Payment method name",
+    "catTypeExpense": "Expense",
+    "catTypeIncome": "Income",
+    "catTypeBoth": "Both",
+    "noCategories": "No categories",
+    "noPaymentMethods": "No payment methods"
   },
   "nav": {
     "home": "Home", "list": "List", "analytics": "Analytics",

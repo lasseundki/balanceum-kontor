@@ -5,6 +5,8 @@ import { WorkspaceProvider } from './contexts/WorkspaceContext'
 import Header from './components/layout/Header'
 import BottomNav from './components/layout/BottomNav'
 import Dashboard from './pages/Dashboard'
+import Transactions from './pages/Transactions'
+import Settings from './pages/Settings'
 import AddTransactionModal from './components/modals/AddTransactionModal'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
@@ -20,9 +22,9 @@ function AppLayout() {
       <main className="pb-nav">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/transactions" element={<div className="p-6 font-sans text-text">Transaktionen (kommt)</div>} />
+          <Route path="/transactions" element={<Transactions />} />
           <Route path="/analytics" element={<div className="p-6 font-sans text-text">Analyse (kommt)</div>} />
-          <Route path="/settings" element={<div className="p-6 font-sans text-text">Einstellungen (kommt)</div>} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/join" element={<div className="p-6 font-sans text-text">Workspace beitreten (kommt)</div>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

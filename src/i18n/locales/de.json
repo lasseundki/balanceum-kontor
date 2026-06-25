@@ -55,17 +55,46 @@
   "transaction": {
     "unknown": "Buchung",
     "title": "Transaktion",
+    "editTitle": "Buchung bearbeiten",
+    "details": "Details",
     "paymentMethod": "Zahlungsmethode",
     "forWhom": "Für wen",
     "extraordinary": "Außergewöhnlich",
     "gift": "Geschenk",
-    "notePlaceholder": "Kurze Beschreibung..."
+    "notePlaceholder": "Kurze Beschreibung...",
+    "search": "Suchen...",
+    "noBookings": "Keine Buchungen",
+    "deleted": "Buchung gelöscht",
+    "undoDelete": "Rückgängig",
+    "filterAll": "Alle",
+    "filterExtraordinary": "Außergewöhnlich",
+    "filterNormal": "Normal",
+    "filterFixed": "Fixkosten",
+    "filterGifts": "Geschenke"
   },
   "currency": {
     "select": "Währung wählen",
     "loading": "Wechselkurs wird geladen...",
     "error": "Kurs nicht verfügbar — bitte manuell eingeben:",
-    "manualRate": "z.B. 1.08"
+    "manualRate": "z.B. 1.08",
+    "allCurrencies": "Alle Währungen",
+    "rateLabel": "Wechselkurs"
+  },
+  "settings": {
+    "account": "Konto",
+    "categories": "Kategorien",
+    "paymentMethods": "Zahlungsmethoden",
+    "language": "Sprache",
+    "logout": "Abmelden",
+    "addCategory": "Kategorie hinzufügen",
+    "addPaymentMethod": "Zahlungsmethode hinzufügen",
+    "newCategoryName": "Kategoriename",
+    "newPaymentMethodName": "Name der Zahlungsmethode",
+    "catTypeExpense": "Ausgabe",
+    "catTypeIncome": "Einnahme",
+    "catTypeBoth": "Beides",
+    "noCategories": "Keine Kategorien",
+    "noPaymentMethods": "Keine Zahlungsmethoden"
   },
   "nav": {
     "home": "Start", "list": "Liste", "analytics": "Analyse",

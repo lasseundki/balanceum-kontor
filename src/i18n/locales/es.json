@@ -55,17 +55,46 @@
   "transaction": {
     "unknown": "Transacción",
     "title": "Transacción",
+    "editTitle": "Editar transacción",
+    "details": "Detalles",
     "paymentMethod": "Método de pago",
     "forWhom": "Para quién",
     "extraordinary": "Extraordinario",
     "gift": "Regalo",
-    "notePlaceholder": "Descripción breve..."
+    "notePlaceholder": "Descripción breve...",
+    "search": "Buscar...",
+    "noBookings": "Sin transacciones",
+    "deleted": "Transacción eliminada",
+    "undoDelete": "Deshacer",
+    "filterAll": "Todos",
+    "filterExtraordinary": "Extraordinario",
+    "filterNormal": "Normal",
+    "filterFixed": "Costos fijos",
+    "filterGifts": "Regalos"
   },
   "currency": {
     "select": "Seleccionar moneda",
     "loading": "Cargando tipo de cambio...",
     "error": "Tasa no disponible — ingresar manualmente:",
-    "manualRate": "ej. 1.08"
+    "manualRate": "ej. 1.08",
+    "allCurrencies": "Todas las monedas",
+    "rateLabel": "Tipo de cambio"
+  },
+  "settings": {
+    "account": "Cuenta",
+    "categories": "Categorías",
+    "paymentMethods": "Métodos de pago",
+    "language": "Idioma",
+    "logout": "Cerrar sesión",
+    "addCategory": "Agregar categoría",
+    "addPaymentMethod": "Agregar método de pago",
+    "newCategoryName": "Nombre de categoría",
+    "newPaymentMethodName": "Nombre del método de pago",
+    "catTypeExpense": "Gasto",
+    "catTypeIncome": "Ingreso",
+    "catTypeBoth": "Ambos",
+    "noCategories": "Sin categorías",
+    "noPaymentMethods": "Sin métodos de pago"
   },
   "nav": {
     "home": "Inicio", "list": "Lista", "analytics": "Análisis",
