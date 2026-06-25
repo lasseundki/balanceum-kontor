@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LogOut, Plus, Trash2, Check, ChevronDown, ChevronUp, Download } from 'lucide-react'
+import { LogOut, Plus, Trash2, Check, ChevronDown, ChevronUp, Download, Copy, Link, Pencil } from 'lucide-react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import { updateProfile } from 'firebase/auth'
@@ -14,6 +14,7 @@ import {
 } from '../hooks/useWorkspaceFirestore'
 import { fmt } from '../lib/formatters'
 import { exportTransactionsCsv } from '../lib/export'
+import { generateInviteCode } from '../lib/workspace'
 import { useWorkspace } from '../contexts/WorkspaceContext'
 import type { CategoryType, TransactionType, Frequency } from '../types'
 
@@ -73,7 +74,7 @@ export default function Settings() {
   const paymentMethods = usePaymentMethods()
   const { addPaymentMethod, deletePaymentMethod } = usePaymentMethodActions()
   const recurring = useRecurringTransactions()
-  const { addRecurring, deleteRecurring } = useRecurringActions()
+  const { addRecurring, updateRecurring, deleteRecurring } = useRecurringActions()
   const budgets = useBudgets()
   const { setBudget, deleteBudget } = useBudgetActions()
   const templates = useTemplates()
@@ -126,6 +127,42 @@ export default function Settings() {
   const [tmplAmount, setTmplAmount] = useState('')
   const [tmplCatId, setTmplCatId] = useState('')
   const [savingTmpl, setSavingTmpl] = useState(false)
+
+  // Invite code
+  const [inviteCode, setInviteCode] = useState('')
+  const [generatingCode, setGeneratingCode] = useState(false)
+  const [codeCopied, setCodeCopied] = useState(false)
+
+  async function handleGenerateCode() {
+    if (!activeWorkspaceId) return
+    setGeneratingCode(true)
+    const code = await generateInviteCode(activeWorkspaceId)
+    setInviteCode(code)
+    setGeneratingCode(false)
+    setCodeCopied(false)
+  }
+
+  function handleCopyCode() {
+    const shareUrl = `${window.location.origin}${window.location.pathname}#/join?code=${inviteCode}`
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setCodeCopied(true)
+      setTimeout(() => setCodeCopied(false), 2000)
+    })
+  }
+
+  // Edit recurring
+  const [editRecId, setEditRecId] = useState<string | null>(null)
+  const [editRecAmount, setEditRecAmount] = useState('')
+  const [editRecFreq, setEditRecFreq] = useState<Frequency>('monthly')
+  const [editRecNote, setEditRecNote] = useState('')
+
+  async function handleSaveEditRec() {
+    if (!editRecId) return
+    const parsed = parseFloat(editRecAmount.replace(/\./g, '').replace(',', '.'))
+    if (!parsed) return
+    await updateRecurring(editRecId, { amount: parsed, frequency: editRecFreq, note: editRecNote.trim() || undefined })
+    setEditRecId(null)
+  }
 
   // Export
   const [exporting, setExporting] = useState(false)
@@ -271,6 +308,44 @@ export default function Settings() {
             <LogOut size={16} />
             <span className="text-sm font-medium">{t('settings.logout')}</span>
           </button>
+        </div>
+      </section>
+
+      {/* Invite */}
+      <section>
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">{t('settings.inviteTitle')}</p>
+        <div className="bg-surface border border-border rounded-xl overflow-hidden">
+          {!inviteCode ? (
+            <button
+              onClick={handleGenerateCode}
+              disabled={generatingCode}
+              className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-bg-subtle transition-colors disabled:opacity-50"
+            >
+              <div className="w-8 h-8 bg-accent-light rounded-lg flex items-center justify-center text-accent flex-shrink-0">
+                <Link size={16} />
+              </div>
+              <span className="text-sm font-medium text-text flex-1 text-left">
+                {generatingCode ? t('common.loading') : t('settings.inviteBtn')}
+              </span>
+            </button>
+          ) : (
+            <div className="px-4 py-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-2xl font-bold text-accent tracking-widest">{inviteCode}</span>
+                <button
+                  onClick={handleCopyCode}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${codeCopied ? 'bg-success text-text-inverse' : 'bg-bg-muted text-text-secondary hover:bg-accent-light hover:text-accent'}`}
+                >
+                  {codeCopied ? <Check size={14} /> : <Copy size={14} />}
+                  {codeCopied ? t('settings.inviteCopied') : t('settings.inviteCopy')}
+                </button>
+              </div>
+              <p className="text-xs text-text-muted">{t('settings.inviteExpiry')}</p>
+              <button onClick={() => setInviteCode('')} className="text-xs text-text-muted hover:text-text transition-colors">
+                {t('settings.inviteNew')}
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -612,18 +687,54 @@ export default function Settings() {
             return (
               <div key={rt.id}>
                 {i > 0 && <div className="h-px bg-border" />}
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <span className="text-xl">{cat?.icon ?? '📌'}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-text">{rt.note || cat?.name}</p>
-                    <p className="text-xs text-text-muted">
-                      {fmt(rt.amount, baseCurrency)} · {t(`recurring.${rt.frequency}`)} · {t('recurring.since')} {format(new Date(rt.startDate), 'dd.MM.yyyy')}
-                    </p>
+                {editRecId === rt.id ? (
+                  <div className="px-4 py-3 space-y-3">
+                    <div className="flex gap-2">
+                      <input
+                        type="text" inputMode="decimal" value={editRecAmount}
+                        onChange={e => setEditRecAmount(e.target.value)}
+                        placeholder="0,00"
+                        className="flex-1 border border-border rounded-md px-3 py-2 text-lg font-bold text-text bg-surface focus:outline-none focus:border-accent"
+                      />
+                      <button onClick={handleSaveEditRec} className="px-3 py-2 bg-accent text-text-inverse rounded-md text-sm font-semibold">
+                        <Check size={16} />
+                      </button>
+                      <button onClick={() => setEditRecId(null)} className="px-3 py-2 border border-border rounded-md text-sm text-text-muted">
+                        ✕
+                      </button>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      {FREQUENCIES.map(f => (
+                        <button key={f} onClick={() => setEditRecFreq(f)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${editRecFreq === f ? 'bg-accent text-text-inverse border-accent' : 'border-border text-text-secondary'}`}>
+                          {t(`recurring.${f}`)}
+                        </button>
+                      ))}
+                    </div>
+                    <input type="text" value={editRecNote} onChange={e => setEditRecNote(e.target.value)}
+                      placeholder={t('transaction.notePlaceholder')}
+                      className="w-full border border-border rounded-md px-3 py-2 text-sm text-text bg-surface focus:outline-none focus:border-accent" />
                   </div>
-                  <button onClick={() => deleteRecurring(rt.id)} className="p-1.5 text-error hover:bg-error-light rounded transition-colors">
-                    <Trash2 size={15} />
-                  </button>
-                </div>
+                ) : (
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <span className="text-xl">{cat?.icon ?? '📌'}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-text">{rt.note || cat?.name}</p>
+                      <p className="text-xs text-text-muted">
+                        {fmt(rt.amount, baseCurrency)} · {t(`recurring.${rt.frequency}`)} · {t('recurring.since')} {format(new Date(rt.startDate), 'dd.MM.yyyy')}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => { setEditRecId(rt.id); setEditRecAmount(String(rt.amount)); setEditRecFreq(rt.frequency); setEditRecNote(rt.note ?? '') }}
+                      className="p-1.5 text-text-muted hover:text-text transition-colors"
+                    >
+                      <Pencil size={15} />
+                    </button>
+                    <button onClick={() => deleteRecurring(rt.id)} className="p-1.5 text-error hover:bg-error-light rounded transition-colors">
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                )}
               </div>
             )
           })}

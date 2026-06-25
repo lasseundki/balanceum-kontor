@@ -97,7 +97,13 @@
     "noPaymentMethods": "Keine Zahlungsmethoden",
     "exportTitle": "Daten exportieren",
     "exportBtn": "Als CSV exportieren",
-    "exporting": "Wird exportiert..."
+    "exporting": "Wird exportiert...",
+    "inviteTitle": "Kontor teilen",
+    "inviteBtn": "Einladungslink erstellen",
+    "inviteCopy": "Link kopieren",
+    "inviteCopied": "Kopiert!",
+    "inviteExpiry": "Gültig für 7 Tage · Jeder mit dem Link kann beitreten",
+    "inviteNew": "Neuen Code erstellen"
   },
   "workspace": {
     "personal": "Persönlich", "family": "Familie", "business": "Geschäft",

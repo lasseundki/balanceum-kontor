@@ -107,7 +107,13 @@
     "noPaymentMethods": "No payment methods",
     "exportTitle": "Export data",
     "exportBtn": "Export as CSV",
-    "exporting": "Exporting..."
+    "exporting": "Exporting...",
+    "inviteTitle": "Share workspace",
+    "inviteBtn": "Create invite link",
+    "inviteCopy": "Copy link",
+    "inviteCopied": "Copied!",
+    "inviteExpiry": "Valid for 7 days · Anyone with the link can join",
+    "inviteNew": "Create new code"
   },
   "members": {
     "title": "Members",

@@ -50,6 +50,10 @@ export default function Dashboard() {
     }, {})
 
   const topCats = Object.entries(catTotals).sort(([, a], [, b]) => b - a).slice(0, 5)
+  const budgetWarning = topCats.some(([catId, total]) => {
+    const budget = budgetMap[catId]
+    return budget && (total / budget) >= 0.8
+  })
   const extraordinary = transactions.filter(t => t.isExtraordinary)
   const extraordinaryTotal = extraordinary.reduce((s, t) => s + (t.amountInBase ?? t.amount), 0)
 
@@ -136,8 +140,11 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-heading text-base font-semibold text-text">{t('dashboard.topExpenses')}</h2>
             <button onClick={() => setCatView(v => v === 'compare' ? 'budget' : 'compare')}
-              className="text-xs text-text-muted hover:text-accent transition-colors px-2 py-1 rounded-md hover:bg-bg-subtle">
+              className="relative text-xs text-text-muted hover:text-accent transition-colors px-2 py-1 rounded-md hover:bg-bg-subtle">
               {catView === 'compare' ? t('dashboard.budgetView') : t('dashboard.compareView')}
+              {catView === 'compare' && budgetWarning && (
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-warning" />
+              )}
             </button>
           </div>
           <div className="space-y-3">

@@ -107,7 +107,13 @@
     "noPaymentMethods": "Sin métodos de pago",
     "exportTitle": "Exportar datos",
     "exportBtn": "Exportar como CSV",
-    "exporting": "Exportando..."
+    "exporting": "Exportando...",
+    "inviteTitle": "Compartir espacio",
+    "inviteBtn": "Crear enlace de invitación",
+    "inviteCopy": "Copiar enlace",
+    "inviteCopied": "¡Copiado!",
+    "inviteExpiry": "Válido por 7 días · Cualquiera con el enlace puede unirse",
+    "inviteNew": "Crear nuevo código"
   },
   "members": {
     "title": "Miembros",

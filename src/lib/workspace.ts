@@ -1,4 +1,4 @@
-import { collection, doc, writeBatch, getDoc, getDocs, query, where } from 'firebase/firestore'
+import { collection, doc, writeBatch, getDoc, getDocs, query, where, addDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import type { Workspace, WorkspaceMember, UserWorkspaceMembership, Category, PaymentMethod, LabelMember, WorkspaceType, WorkspaceRole } from '../types'
 
@@ -94,6 +94,23 @@ export async function createWorkspace(
   }
   await batch.commit()
   return wsId
+}
+
+const INVITE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+
+export async function generateInviteCode(wsId: string, role: WorkspaceRole = 'member'): Promise<string> {
+  let code = ''
+  for (let i = 0; i < 6; i++) {
+    code += INVITE_CHARS[Math.floor(Math.random() * INVITE_CHARS.length)]
+  }
+  await addDoc(collection(db, 'inviteCodes'), {
+    code,
+    workspaceId: wsId,
+    role,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
+  })
+  return code
 }
 
 export async function joinWorkspaceByCode(
