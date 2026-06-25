@@ -8,6 +8,7 @@ import {
 } from '../../hooks/useWorkspaceFirestore'
 import { fmt, fmtCurrency, fmtDateShort } from '../../lib/formatters'
 import AddTransactionModal from './AddTransactionModal'
+import { useAuth } from '../../contexts/AuthContext'
 import type { Transaction } from '../../types'
 
 interface Props {
@@ -26,6 +27,7 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export default function TransactionDetailSheet({ tx, onClose }: Props) {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const { activeWorkspace } = useWorkspace()
   const baseCurrency = activeWorkspace?.currency ?? 'EUR'
 
@@ -134,6 +136,10 @@ export default function TransactionDetailSheet({ tx, onClose }: Props) {
               <Row label={t('currency.rateLabel')} value={`1 ${tx.currency} = ${tx.exchangeRate.toFixed(4)} ${baseCurrency}`} />
             ) : null}
             {tx.recurringId ? <Row label={t('transaction.filterFixed')} value="↻" /> : null}
+            {tx.createdBy && tx.createdBy !== user?.uid && (() => {
+              const creator = wsMembers.find(m => m.uid === tx.createdBy)
+              return creator ? <Row label={t('transaction.addedBy')} value={creator.displayName} /> : null
+            })()}
           </div>
 
           {/* Flags */}

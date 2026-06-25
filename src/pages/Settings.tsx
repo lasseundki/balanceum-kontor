@@ -1,8 +1,17 @@
 import { useState } from 'react'
-import { LogOut, Plus, Trash2, Check, ChevronDown, ChevronUp, Download, Copy, Link, Pencil } from 'lucide-react'
+import { LogOut, Plus, Trash2, Check, ChevronDown, ChevronUp, Download, Copy, Link, Pencil, GripVertical, KeyRound } from 'lucide-react'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
-import { updateProfile } from 'firebase/auth'
+import { updateProfile, sendPasswordResetEmail } from 'firebase/auth'
+import { auth } from '../firebase/config'
+import {
+  DndContext, closestCenter, PointerSensor, useSensor, useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext, verticalListSortingStrategy, useSortable, arrayMove,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useAuth } from '../contexts/AuthContext'
 import {
   useCategories, useCategoryActions,
@@ -61,6 +70,61 @@ function IconPicker({ selected, onSelect }: { selected: string; onSelect: (icon:
   )
 }
 
+const CAT_COLORS = [
+  '#7BA89B','#5F8E80','#3D6B5E',
+  '#7A9EC4','#4A7BA8','#5A6FA8',
+  '#C9A05A','#A8813A','#C4B050',
+  '#A891C4','#8570A8','#C47A91',
+  '#B87B72','#9A5A52','#7AB4C4',
+  '#6E6860','#A09890','#C4C4B0',
+]
+
+function ColorPicker({ selected, onSelect }: { selected: string; onSelect: (c: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {CAT_COLORS.map(c => (
+        <button
+          key={c}
+          onClick={() => onSelect(c)}
+          className={`w-7 h-7 rounded-full transition-transform hover:scale-110 ${selected === c ? 'ring-2 ring-offset-2 ring-accent scale-110' : ''}`}
+          style={{ backgroundColor: c }}
+        />
+      ))}
+    </div>
+  )
+}
+
+function SortableCatItem({ cat, onEdit, onDelete, catTypeLabel }: {
+  cat: { id: string; icon: string; name: string; type: string; color?: string }
+  onEdit: () => void
+  onDelete: () => void
+  catTypeLabel: (t: string) => string
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: cat.id })
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-center gap-3 px-4 py-3">
+      <button {...attributes} {...listeners} className="text-text-muted cursor-grab active:cursor-grabbing touch-none p-1 -ml-1">
+        <GripVertical size={16} />
+      </button>
+      <span className="text-xl">{cat.icon}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          {cat.color && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: cat.color }} />}
+          <p className="text-sm font-medium text-text truncate">{cat.name}</p>
+        </div>
+        <p className="text-xs text-text-muted">{catTypeLabel(cat.type)}</p>
+      </div>
+      <button onClick={onEdit} className="p-1.5 text-text-muted hover:text-text transition-colors">
+        <Pencil size={15} />
+      </button>
+      <button onClick={onDelete} className="p-1.5 text-error hover:bg-error-light rounded transition-colors">
+        <Trash2 size={15} />
+      </button>
+    </div>
+  )
+}
+
 const FREQUENCIES: Frequency[] = ['monthly', 'weekly', 'yearly', 'daily']
 
 export default function Settings() {
@@ -70,7 +134,7 @@ export default function Settings() {
   const baseCurrency = activeWorkspace?.currency ?? 'EUR'
 
   const categories = useCategories()
-  const { addCategory, updateCategory, deleteCategory } = useCategoryActions()
+  const { addCategory, updateCategory, deleteCategory, reorderCategories } = useCategoryActions()
   const paymentMethods = usePaymentMethods()
   const { addPaymentMethod, deletePaymentMethod } = usePaymentMethodActions()
   const recurring = useRecurringTransactions()
@@ -82,10 +146,23 @@ export default function Settings() {
   const labelMembers = useLabelMembers()
   const { addLabelMember, deleteLabelMember } = useLabelMemberActions()
 
+  // DnD für Kategorien
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
+
+  async function handleCatDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = categories.findIndex(c => c.id === active.id)
+    const newIndex = categories.findIndex(c => c.id === over.id)
+    const reordered = arrayMove(categories, oldIndex, newIndex)
+    await reorderCategories(reordered.map((c, i) => ({ id: c.id, order: i })))
+  }
+
   // New category form
   const [showAddCat, setShowAddCat] = useState(false)
   const [newCatName, setNewCatName] = useState('')
   const [newCatIcon, setNewCatIcon] = useState('📌')
+  const [newCatColor, setNewCatColor] = useState('#7BA89B')
   const [newCatType, setNewCatType] = useState<CategoryType>('expense')
   const [savingCat, setSavingCat] = useState(false)
 
@@ -93,6 +170,17 @@ export default function Settings() {
   const [editCatId, setEditCatId] = useState<string | null>(null)
   const [editCatName, setEditCatName] = useState('')
   const [editCatIcon, setEditCatIcon] = useState('📌')
+  const [editCatColor, setEditCatColor] = useState('#7BA89B')
+
+  // Passwort zurücksetzen
+  const [pwResetSent, setPwResetSent] = useState(false)
+
+  async function handlePasswordReset() {
+    if (!user?.email) return
+    await sendPasswordResetEmail(auth, user.email)
+    setPwResetSent(true)
+    setTimeout(() => setPwResetSent(false), 5000)
+  }
 
   // New payment method
   const [showAddPm, setShowAddPm] = useState(false)
@@ -190,14 +278,14 @@ export default function Settings() {
   async function handleAddCategory() {
     if (!newCatName.trim()) return
     setSavingCat(true)
-    await addCategory({ name: newCatName.trim(), icon: newCatIcon, color: '', type: newCatType, order: categories.length })
-    setNewCatName(''); setNewCatIcon('📌'); setNewCatType('expense'); setShowAddCat(false)
+    await addCategory({ name: newCatName.trim(), icon: newCatIcon, color: newCatColor, type: newCatType, order: categories.length })
+    setNewCatName(''); setNewCatIcon('📌'); setNewCatColor('#7BA89B'); setNewCatType('expense'); setShowAddCat(false)
     setSavingCat(false)
   }
 
   async function handleSaveEditCat() {
     if (!editCatId || !editCatName.trim()) return
-    await updateCategory(editCatId, { name: editCatName.trim(), icon: editCatIcon })
+    await updateCategory(editCatId, { name: editCatName.trim(), icon: editCatIcon, color: editCatColor })
     setEditCatId(null)
   }
 
@@ -302,8 +390,17 @@ export default function Settings() {
             </div>
           </div>
           <button
+            onClick={handlePasswordReset}
+            disabled={pwResetSent}
+            className="w-full flex items-center gap-3 px-4 py-3 border-t border-border hover:bg-bg-subtle transition-colors disabled:opacity-60"
+          >
+            <KeyRound size={16} className="text-text-muted" />
+            <span className="text-sm font-medium text-text flex-1 text-left">{t('settings.changePassword')}</span>
+            {pwResetSent && <span className="text-xs text-success font-medium">{t('settings.passwordResetSent')}</span>}
+          </button>
+          <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-error hover:bg-error-light transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 border-t border-border text-error hover:bg-error-light transition-colors"
           >
             <LogOut size={16} />
             <span className="text-sm font-medium">{t('settings.logout')}</span>
@@ -450,6 +547,10 @@ export default function Settings() {
               ))}
             </div>
             <IconPicker selected={newCatIcon} onSelect={setNewCatIcon} />
+            <div>
+              <p className="text-xs text-text-muted mb-2">{t('settings.color')}</p>
+              <ColorPicker selected={newCatColor} onSelect={setNewCatColor} />
+            </div>
             <button
               onClick={handleAddCategory}
               disabled={savingCat || !newCatName.trim()}
@@ -460,47 +561,43 @@ export default function Settings() {
           </div>
         )}
 
+        {editCatId && (
+          <div className="bg-surface border border-accent rounded-xl p-4 mb-3 space-y-3">
+            <div className="flex gap-2">
+              <input value={editCatName} onChange={e => setEditCatName(e.target.value)}
+                className="flex-1 border border-border rounded-md px-3 py-2 text-sm text-text bg-surface focus:outline-none focus:border-accent" />
+              <button onClick={handleSaveEditCat} className="px-3 py-2 bg-accent text-text-inverse rounded-md text-sm font-semibold">
+                <Check size={16} />
+              </button>
+              <button onClick={() => setEditCatId(null)} className="px-3 py-2 border border-border rounded-md text-sm text-text-muted">✕</button>
+            </div>
+            <IconPicker selected={editCatIcon} onSelect={setEditCatIcon} />
+            <div>
+              <p className="text-xs text-text-muted mb-2">{t('settings.color')}</p>
+              <ColorPicker selected={editCatColor} onSelect={setEditCatColor} />
+            </div>
+          </div>
+        )}
+
         <div className="bg-surface border border-border rounded-xl overflow-hidden">
           {categories.length === 0 && (
             <p className="px-4 py-3 text-sm text-text-muted">{t('settings.noCategories')}</p>
           )}
-          {categories.map((cat, i) => (
-            <div key={cat.id}>
-              {i > 0 && <div className="h-px bg-border" />}
-              {editCatId === cat.id ? (
-                <div className="px-4 py-3 space-y-3">
-                  <div className="flex gap-2">
-                    <input
-                      value={editCatName}
-                      onChange={e => setEditCatName(e.target.value)}
-                      className="flex-1 border border-border rounded-md px-3 py-2 text-sm text-text bg-surface focus:outline-none focus:border-accent"
-                    />
-                    <button onClick={handleSaveEditCat} className="px-3 py-2 bg-accent text-text-inverse rounded-md text-sm font-semibold">
-                      <Check size={16} />
-                    </button>
-                  </div>
-                  <IconPicker selected={editCatIcon} onSelect={setEditCatIcon} />
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleCatDragEnd}>
+            <SortableContext items={categories.map(c => c.id)} strategy={verticalListSortingStrategy}>
+              {categories.map((cat, i) => (
+                <div key={cat.id}>
+                  {i > 0 && <div className="h-px bg-border" />}
+                  <SortableCatItem
+                    cat={cat}
+                    catTypeLabel={catTypeLabel}
+                    onEdit={() => { setEditCatId(cat.id); setEditCatName(cat.name); setEditCatIcon(cat.icon); setEditCatColor(cat.color ?? '#7BA89B'); setShowAddCat(false) }}
+                    onDelete={() => deleteCategory(cat.id)}
+                  />
                 </div>
-              ) : (
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <span className="text-xl">{cat.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-text">{cat.name}</p>
-                    <p className="text-xs text-text-muted">{catTypeLabel(cat.type)}</p>
-                  </div>
-                  <button
-                    onClick={() => { setEditCatId(cat.id); setEditCatName(cat.name); setEditCatIcon(cat.icon); setShowAddCat(false) }}
-                    className="p-1.5 text-text-muted hover:text-text transition-colors"
-                  >
-                    ✏️
-                  </button>
-                  <button onClick={() => deleteCategory(cat.id)} className="p-1.5 text-error hover:bg-error-light rounded transition-colors">
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
       </section>
 

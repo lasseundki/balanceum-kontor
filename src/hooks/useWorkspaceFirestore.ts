@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import {
   collection, query, where, orderBy, onSnapshot,
-  addDoc, updateDoc, deleteDoc, doc, getDocs,
+  addDoc, updateDoc, deleteDoc, doc, getDocs, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import { useWorkspace } from '../contexts/WorkspaceContext'
@@ -202,7 +202,16 @@ export function useCategoryActions() {
     await deleteDoc(wsDoc(activeWorkspaceId, 'categories', id))
   }, [activeWorkspaceId])
 
-  return { addCategory, updateCategory, deleteCategory }
+  const reorderCategories = useCallback(async (ordered: { id: string; order: number }[]) => {
+    if (!activeWorkspaceId) return
+    const batch = writeBatch(db)
+    for (const { id, order } of ordered) {
+      batch.update(wsDoc(activeWorkspaceId, 'categories', id), { order })
+    }
+    await batch.commit()
+  }, [activeWorkspaceId])
+
+  return { addCategory, updateCategory, deleteCategory, reorderCategories }
 }
 
 export function usePaymentMethodActions() {

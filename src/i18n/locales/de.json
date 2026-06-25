@@ -70,7 +70,8 @@
     "filterExtraordinary": "Außergewöhnlich",
     "filterNormal": "Normal",
     "filterFixed": "Fixkosten",
-    "filterGifts": "Geschenke"
+    "filterGifts": "Geschenke",
+    "addedBy": "Hinzugefügt von"
   },
   "currency": {
     "select": "Währung wählen",
@@ -95,6 +96,9 @@
     "catTypeBoth": "Beides",
     "noCategories": "Keine Kategorien",
     "noPaymentMethods": "Keine Zahlungsmethoden",
+    "color": "Farbe",
+    "changePassword": "Passwort ändern",
+    "passwordResetSent": "E-Mail gesendet!",
     "exportTitle": "Daten exportieren",
     "exportBtn": "Als CSV exportieren",
     "exporting": "Wird exportiert...",
@@ -186,7 +190,21 @@
     "forecastNoData": "Zu wenig Daten — mind. 2 abgeschlossene Monate nötig",
     "forecastCurrentOnly": "Prognose nur für das aktuelle Jahr verfügbar",
     "actual": "Ist",
-    "projected": "Prognose"
+    "projected": "Prognose",
+    "comparison": "Vorjahr",
+    "cumulative": "Kumulativ",
+    "runningBalance": "Laufender Saldo"
+  },
+  "onboarding": {
+    "skip": "Überspringen",
+    "next": "Weiter",
+    "done": "Los geht's!",
+    "step1Title": "Willkommen bei Kontor",
+    "step1Text": "Dein Finanz-Workspace für Alltag, Familie und Business. Behalte immer den Überblick — allein oder gemeinsam.",
+    "step2Title": "Buchungen & Analysen",
+    "step2Text": "Erfasse Einnahmen und Ausgaben in Sekunden. Die Analyseansicht zeigt dir Trends, Ausreißer und eine Jahresprognose.",
+    "step3Title": "Gemeinsam buchen",
+    "step3Text": "Lade Familie oder Partner über einen Einladungslink ein. Alle sehen dieselben Buchungen in Echtzeit."
   },
   "search": {
     "placeholder": "Suchen...",

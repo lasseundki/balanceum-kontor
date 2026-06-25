@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Search, SlidersHorizontal } from 'lucide-react'
+import { useState, useMemo, useRef } from 'react'
+import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { de, enUS, es } from 'date-fns/locale'
-import { useMonthTransactions, useCategories } from '../hooks/useWorkspaceFirestore'
+import { useMonthTransactions, useCategories, useTransactionActions } from '../hooks/useWorkspaceFirestore'
 import { useWorkspace } from '../contexts/WorkspaceContext'
 import TransactionDetailSheet from '../components/modals/TransactionDetailSheet'
 import { fmt, fmtMonthYear, fmtCurrency } from '../lib/formatters'
@@ -13,6 +13,46 @@ type SpecialFilter = 'all' | 'extraordinary' | 'normal' | 'fixed' | 'gifts'
 
 function ea(tx: Transaction) {
   return tx.amountInBase ?? tx.amount
+}
+
+function SwipeRow({ children, onDelete }: { children: React.ReactNode; onDelete: () => void }) {
+  const startX = useRef(0)
+  const [offset, setOffset] = useState(0)
+  const THRESHOLD = 80
+
+  function onTouchStart(e: React.TouchEvent) {
+    startX.current = e.touches[0].clientX
+  }
+  function onTouchMove(e: React.TouchEvent) {
+    const dx = e.touches[0].clientX - startX.current
+    if (dx < 0) setOffset(Math.max(dx, -THRESHOLD - 16))
+  }
+  function onTouchEnd() {
+    if (offset < -THRESHOLD) {
+      onDelete()
+    }
+    setOffset(0)
+  }
+
+  return (
+    <div className="relative overflow-hidden">
+      <div
+        className="absolute right-0 top-0 bottom-0 w-20 flex items-center justify-center bg-error"
+        style={{ opacity: Math.min(Math.abs(offset) / THRESHOLD, 1) }}
+      >
+        <Trash2 size={20} className="text-white" />
+      </div>
+      <div
+        style={{ transform: `translateX(${offset}px)`, transition: offset === 0 ? 'transform 0.2s ease' : 'none' }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        className="relative bg-surface"
+      >
+        {children}
+      </div>
+    </div>
+  )
 }
 
 export default function Transactions() {
@@ -33,6 +73,8 @@ export default function Transactions() {
   const [filterCurrency, setFilterCurrency] = useState('')
   const [viewingTx, setViewingTx] = useState<Transaction | null>(null)
   const [showFilters, setShowFilters] = useState(false)
+  const [showRunningBalance, setShowRunningBalance] = useState(false)
+  const { deleteTransaction } = useTransactionActions()
 
   const [pendingType, setPendingType] = useState<'all' | 'expense' | 'income'>('all')
   const [pendingSpecial, setPendingSpecial] = useState<SpecialFilter>('all')
@@ -79,6 +121,19 @@ export default function Transactions() {
 
   const income = transactions.filter(tx => tx.type === 'income').reduce((s, tx) => s + ea(tx), 0)
   const expense = transactions.filter(tx => tx.type === 'expense').reduce((s, tx) => s + ea(tx), 0)
+
+  // Laufender Saldo: kumulativ pro Tag (älteste zuerst)
+  const runningByDate = useMemo(() => {
+    const sorted = [...filtered].sort((a, b) => a.date - b.date)
+    let running = 0
+    const map: Record<string, number> = {}
+    for (const tx of sorted) {
+      running += tx.type === 'income' ? ea(tx) : -ea(tx)
+      const key = format(new Date(tx.date), 'yyyy-MM-dd')
+      map[key] = running
+    }
+    return map
+  }, [filtered])
 
   const grouped = useMemo(() => {
     const map = new Map<string, typeof filtered>()
@@ -162,10 +217,14 @@ export default function Transactions() {
             { label: t('common.expense'), val: expense, color: 'text-error' },
             { label: t('common.balance'), val: income - expense, color: income - expense >= 0 ? 'text-success' : 'text-error' },
           ].map(({ label, val, color }) => (
-            <div key={label} className="bg-surface border border-border rounded-lg p-3 text-center">
+            <button
+              key={label}
+              onClick={() => label === t('common.balance') ? setShowRunningBalance(r => !r) : undefined}
+              className={`bg-surface border border-border rounded-lg p-3 text-center ${label === t('common.balance') ? 'hover:bg-bg-subtle transition-colors' : ''}`}
+            >
               <p className="text-xs text-text-muted mb-0.5">{label}</p>
               <p className={`text-sm font-bold ${color}`}>{fmt(val, baseCurrency)}</p>
-            </div>
+            </button>
           ))}
         </div>
 
@@ -247,9 +306,16 @@ export default function Transactions() {
                 <div key={dateKey}>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-semibold text-text-muted uppercase tracking-wide">{dayLabel}</span>
-                    <span className={`text-xs font-semibold ${dayTotal >= 0 ? 'text-success' : 'text-error'}`}>
-                      {dayTotal >= 0 ? '+' : ''}{fmt(dayTotal, baseCurrency)}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      {showRunningBalance && runningByDate[dateKey] !== undefined && (
+                        <span className={`text-xs font-medium ${runningByDate[dateKey] >= 0 ? 'text-success' : 'text-error'}`}>
+                          ∑ {fmt(runningByDate[dateKey], baseCurrency)}
+                        </span>
+                      )}
+                      <span className={`text-xs font-semibold ${dayTotal >= 0 ? 'text-success' : 'text-error'}`}>
+                        {dayTotal >= 0 ? '+' : ''}{fmt(dayTotal, baseCurrency)}
+                      </span>
+                    </div>
                   </div>
                   <div className="bg-surface border border-border rounded-xl overflow-hidden">
                     {txs.map((tx, i) => {
@@ -257,39 +323,41 @@ export default function Transactions() {
                       return (
                         <div key={tx.id}>
                           {i > 0 && <div className="h-px bg-border mx-4" />}
-                          <div
-                            className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-bg-subtle transition-colors ${
-                              tx.isExtraordinary ? 'border-l-4 border-l-warning' : ''
-                            }`}
-                            onClick={() => setViewingTx(tx)}
-                          >
-                            <span className="text-xl">{cat?.icon ?? '📌'}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-text truncate">
-                                {tx.note || cat?.name || t('transaction.unknown')}
-                              </p>
-                              <div className="flex items-center gap-1.5 mt-0.5">
-                                <span className="text-xs text-text-muted">{cat?.name}</span>
-                                {tx.isExtraordinary && (
-                                  <span className="text-xs bg-warning-light text-warning px-1.5 py-0.5 rounded-sm font-medium">⚡</span>
+                          <SwipeRow onDelete={() => deleteTransaction(tx.id)}>
+                            <div
+                              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-bg-subtle transition-colors ${
+                                tx.isExtraordinary ? 'border-l-4 border-l-warning' : ''
+                              }`}
+                              onClick={() => setViewingTx(tx)}
+                            >
+                              <span className="text-xl">{cat?.icon ?? '📌'}</span>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-text truncate">
+                                  {tx.note || cat?.name || t('transaction.unknown')}
+                                </p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className="text-xs text-text-muted">{cat?.name}</span>
+                                  {tx.isExtraordinary && (
+                                    <span className="text-xs bg-warning-light text-warning px-1.5 py-0.5 rounded-sm font-medium">⚡</span>
+                                  )}
+                                  {tx.isGift && (
+                                    <span className="text-xs bg-info-light text-info px-1.5 py-0.5 rounded-sm font-medium">🎁</span>
+                                  )}
+                                  {tx.recurringId && (
+                                    <span className="text-xs text-text-muted">↻</span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                {tx.currency && tx.currency !== baseCurrency && (
+                                  <p className="text-xs text-text-muted">{fmtCurrency(tx.amount, tx.currency)}</p>
                                 )}
-                                {tx.isGift && (
-                                  <span className="text-xs bg-info-light text-info px-1.5 py-0.5 rounded-sm font-medium">🎁</span>
-                                )}
-                                {tx.recurringId && (
-                                  <span className="text-xs text-text-muted">↻</span>
-                                )}
+                                <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-success' : 'text-error'}`}>
+                                  {tx.type === 'income' ? '+' : '−'}{fmt(ea(tx), baseCurrency)}
+                                </span>
                               </div>
                             </div>
-                            <div className="text-right">
-                              {tx.currency && tx.currency !== baseCurrency && (
-                                <p className="text-xs text-text-muted">{fmtCurrency(tx.amount, tx.currency)}</p>
-                              )}
-                              <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-success' : 'text-error'}`}>
-                                {tx.type === 'income' ? '+' : '−'}{fmt(ea(tx), baseCurrency)}
-                              </span>
-                            </div>
-                          </div>
+                          </SwipeRow>
                         </div>
                       )
                     })}

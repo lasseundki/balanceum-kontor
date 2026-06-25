@@ -91,6 +91,9 @@ export default function Analytics() {
   const [selectedCatId, setSelectedCatId] = useState('')
   const [viewMonth, setViewMonth] = useState(now.getMonth())
   const [yearChartType, setYearChartType] = useState<YearChartType>('stacked')
+  const [showComparison, setShowComparison] = useState(false)
+  const [showCumulative, setShowCumulative] = useState(false)
+  const { transactions: prevYearTxs } = useYearTransactions(year - 1)
 
   const dateLocale = i18n.language === 'de' ? de : i18n.language === 'es' ? es : enUS
 
@@ -217,6 +220,30 @@ export default function Analytics() {
       return { day, expense }
     })
   }, [viewMonthTxs, year, viewMonth])
+
+  // Vorjahres-Monatsdaten für Vergleich
+  const prevMonthData = useMemo(() =>
+    MONTHS.map((name, m) => {
+      const txs = prevYearTxs.filter(t => new Date(t.date).getMonth() === m)
+      const income = txs.filter(t => t.type === 'income').reduce((s, t) => s + ea(t), 0)
+      const expense = txs.filter(t => t.type === 'expense').reduce((s, t) => s + ea(t), 0)
+      return { name, income, expense }
+    }),
+    [prevYearTxs, MONTHS]
+  )
+
+  // Kumulativer Saldo für Monats-Tab
+  const cumulativeDayData = useMemo(() => {
+    let running = 0
+    return dayData.map(d => {
+      running += d.expense > 0 ? -d.expense : 0
+      const incomePart = viewMonthTxs
+        .filter(t => t.type === 'income' && new Date(t.date).getDate() === d.day)
+        .reduce((s, t) => s + ea(t), 0)
+      running += incomePart
+      return { ...d, cumulative: running }
+    })
+  }, [dayData, viewMonthTxs])
 
   const catMonthData = useMemo(() => {
     if (!selectedCatId) return []
@@ -399,12 +426,20 @@ export default function Analytics() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <h2 className="font-heading text-base font-semibold text-text">{t('analytics.monthlyOverview')}</h2>
-                  <button
-                    onClick={() => setYearChartType(v => v === 'stacked' ? 'line' : 'stacked')}
-                    className="flex items-center gap-1 px-2 py-1 rounded-md border border-border text-xs text-text-secondary hover:bg-bg-subtle transition-colors"
-                  >
-                    {yearChartType === 'stacked' ? '〜' : '▦'}<ChevronRight size={12} />
-                  </button>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setYearChartType(v => v === 'stacked' ? 'line' : 'stacked')}
+                      className="flex items-center gap-1 px-2 py-1 rounded-md border border-border text-xs text-text-secondary hover:bg-bg-subtle transition-colors"
+                    >
+                      {yearChartType === 'stacked' ? '〜' : '▦'}<ChevronRight size={12} />
+                    </button>
+                    <button
+                      onClick={() => setShowComparison(v => !v)}
+                      className={`px-2 py-1 rounded-md border text-xs font-medium transition-colors ${showComparison ? 'bg-info text-white border-info' : 'border-border text-text-secondary hover:bg-bg-subtle'}`}
+                    >
+                      {t('analytics.comparison')}
+                    </button>
+                  </div>
                 </div>
                 {yearChartType === 'stacked' && (
                   <p className="text-xs text-text-muted mt-0.5 italic">{t('analytics.clickHint')}</p>
@@ -447,6 +482,18 @@ export default function Analytics() {
                         opacity={selectedMonth !== null ? 0.45 : 1}
                       />
                     ))}
+                    {showComparison && (
+                      <Bar
+                        dataKey={(entry: { name: string }) => {
+                          const idx = MONTHS.indexOf(entry.name)
+                          return prevMonthData[idx]?.expense ?? 0
+                        }}
+                        name={`${year - 1}`}
+                        fill="#A09890"
+                        fillOpacity={0.4}
+                        radius={[3, 3, 0, 0]}
+                      />
+                    )}
                   </BarChart>
                 </ResponsiveContainer>
                 {expenseCatIds.length > 0 && (
@@ -576,9 +623,17 @@ export default function Analytics() {
 
           {viewExpense > 0 && (
             <div className="bg-surface border border-border rounded-xl p-4">
-              <h2 className="font-heading text-sm font-semibold text-text mb-3">{t('common.expense')}</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-heading text-sm font-semibold text-text">{t('common.expense')}</h2>
+                <button
+                  onClick={() => setShowCumulative(v => !v)}
+                  className={`px-2 py-1 rounded-md border text-xs font-medium transition-colors ${showCumulative ? 'bg-info text-white border-info' : 'border-border text-text-secondary hover:bg-bg-subtle'}`}
+                >
+                  {t('analytics.cumulative')}
+                </button>
+              </div>
               <ResponsiveContainer width="100%" height={120}>
-                <BarChart data={dayData}>
+                <ComposedChart data={cumulativeDayData}>
                   <XAxis dataKey="day" tick={{ fontSize: 9, fill: '#A09890' }} axisLine={false} tickLine={false} interval={4} />
                   <YAxis hide />
                   <Tooltip
@@ -586,7 +641,10 @@ export default function Analytics() {
                     contentStyle={{ fontSize: 11, border: '1px solid #E2DED7', borderRadius: 8 }}
                   />
                   <Bar dataKey="expense" name={t('common.expense')} fill="#B87B72" radius={[2, 2, 0, 0]} />
-                </BarChart>
+                  {showCumulative && (
+                    <Line type="monotone" dataKey="cumulative" name={t('analytics.runningBalance')} stroke="#7A9EC4" strokeWidth={2} dot={false} />
+                  )}
+                </ComposedChart>
               </ResponsiveContainer>
             </div>
           )}

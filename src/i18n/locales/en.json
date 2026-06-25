@@ -80,7 +80,8 @@
     "filterExtraordinary": "Extraordinary",
     "filterNormal": "Normal",
     "filterFixed": "Fixed costs",
-    "filterGifts": "Gifts"
+    "filterGifts": "Gifts",
+    "addedBy": "Added by"
   },
   "currency": {
     "select": "Select currency",
@@ -105,6 +106,9 @@
     "catTypeBoth": "Both",
     "noCategories": "No categories",
     "noPaymentMethods": "No payment methods",
+    "color": "Color",
+    "changePassword": "Change password",
+    "passwordResetSent": "Email sent!",
     "exportTitle": "Export data",
     "exportBtn": "Export as CSV",
     "exporting": "Exporting...",
@@ -177,7 +181,21 @@
     "forecastNoData": "Not enough data — need at least 2 completed months",
     "forecastCurrentOnly": "Forecast is only available for the current year",
     "actual": "Actual",
-    "projected": "Forecast"
+    "projected": "Forecast",
+    "comparison": "Prior year",
+    "cumulative": "Cumulative",
+    "runningBalance": "Running balance"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "done": "Get started!",
+    "step1Title": "Welcome to Kontor",
+    "step1Text": "Your finance workspace for everyday life, family and business. Always stay on top — alone or together.",
+    "step2Title": "Bookings & Analytics",
+    "step2Text": "Log income and expenses in seconds. The analytics view shows trends, outliers and a year-end forecast.",
+    "step3Title": "Book together",
+    "step3Text": "Invite family or partners via an invite link. Everyone sees the same bookings in real time."
   },
   "search": {
     "placeholder": "Search...",

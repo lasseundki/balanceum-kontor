@@ -13,6 +13,7 @@ import Analytics from './pages/Analytics'
 import Settings from './pages/Settings'
 import JoinWorkspacePage from './pages/JoinWorkspacePage'
 import AddTransactionModal from './components/modals/AddTransactionModal'
+import OnboardingFlow from './components/OnboardingFlow'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
@@ -36,6 +37,7 @@ function RecurringGeneratorEffect() {
 
 function AppLayout() {
   const [showAdd, setShowAdd] = useState(false)
+  const [onboarded, setOnboarded] = useState(() => localStorage.getItem('onboarded') === 'true')
 
   return (
     <div className="max-w-lg mx-auto min-h-screen bg-bg-subtle">
@@ -53,6 +55,7 @@ function AppLayout() {
       </main>
       <BottomNav onAdd={() => setShowAdd(true)} />
       {showAdd && <AddTransactionModal onClose={() => setShowAdd(false)} />}
+      {!onboarded && <OnboardingFlow onDone={() => setOnboarded(true)} />}
     </div>
   )
 }
