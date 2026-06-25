@@ -27,6 +27,7 @@ export interface UserWorkspaceMembership {
   role: WorkspaceRole
   name: string           // Workspace-Name (denorm.)
   type: WorkspaceType    // (denorm.)
+  currency: string       // (denorm.)
   joinedAt: number
 }
 

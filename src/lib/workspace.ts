@@ -51,7 +51,7 @@ export async function createPersonalWorkspace(uid: string, displayName: string):
   batch.set(doc(collection(db, 'workspaces', wsId, 'labelMembers')), labelMe)
 
   const membership: Omit<UserWorkspaceMembership, never> = {
-    workspaceId: wsId, role: 'owner', name: 'Mein Kontor', type: 'personal', joinedAt: now,
+    workspaceId: wsId, role: 'owner', name: 'Mein Kontor', type: 'personal', currency: 'EUR', joinedAt: now,
   }
   batch.set(doc(db, 'users', uid, 'workspaces', wsId), membership)
 

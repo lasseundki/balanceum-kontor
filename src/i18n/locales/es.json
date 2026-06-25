@@ -40,6 +40,21 @@
       "member": "Miembro", "viewer": "Espectador"
     }
   },
+  "dashboard": {
+    "welcomeBack": "Bienvenido",
+    "topExpenses": "Principales gastos",
+    "recentBookings": "Últimas transacciones",
+    "noBookings": "Aún no hay transacciones",
+    "startHint": "Toca + para empezar",
+    "extraordinaryAlert": "Gastos extraordinarios",
+    "extraordinaryMonth": "este mes",
+    "quickEntry": "Entrada rápida",
+    "compareView": "Comparar",
+    "budgetView": "Presupuesto"
+  },
+  "transaction": {
+    "unknown": "Transacción"
+  },
   "nav": {
     "home": "Inicio", "list": "Lista", "analytics": "Análisis",
     "cards": "Tarjetas", "settings": "Ajustes"

@@ -40,6 +40,21 @@
       "member": "Mitglied", "viewer": "Betrachter"
     }
   },
+  "dashboard": {
+    "welcomeBack": "Willkommen zurück",
+    "topExpenses": "Top Ausgaben",
+    "recentBookings": "Letzte Buchungen",
+    "noBookings": "Noch keine Buchungen",
+    "startHint": "Tippe auf + um zu starten",
+    "extraordinaryAlert": "Außergewöhnliche Ausgaben",
+    "extraordinaryMonth": "diesen Monat",
+    "quickEntry": "Schnelleingabe",
+    "compareView": "Vergleich",
+    "budgetView": "Budget"
+  },
+  "transaction": {
+    "unknown": "Buchung"
+  },
   "nav": {
     "home": "Start", "list": "Liste", "analytics": "Analyse",
     "cards": "Karten", "settings": "Einstellungen"

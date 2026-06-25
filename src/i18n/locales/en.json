@@ -40,6 +40,21 @@
       "member": "Member", "viewer": "Viewer"
     }
   },
+  "dashboard": {
+    "welcomeBack": "Welcome back",
+    "topExpenses": "Top Expenses",
+    "recentBookings": "Recent Bookings",
+    "noBookings": "No bookings yet",
+    "startHint": "Tap + to get started",
+    "extraordinaryAlert": "Extraordinary expenses",
+    "extraordinaryMonth": "this month",
+    "quickEntry": "Quick entry",
+    "compareView": "Compare",
+    "budgetView": "Budget"
+  },
+  "transaction": {
+    "unknown": "Transaction"
+  },
   "nav": {
     "home": "Home", "list": "List", "analytics": "Analytics",
     "cards": "Cards", "settings": "Settings"
