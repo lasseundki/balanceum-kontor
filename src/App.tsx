@@ -1,24 +1,45 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { WorkspaceProvider } from './contexts/WorkspaceContext'
+import { useWorkspace } from './contexts/WorkspaceContext'
+import { useRecurringTransactions } from './hooks/useWorkspaceFirestore'
+import { generateRecurringTransactions } from './lib/recurringGenerator'
 import Header from './components/layout/Header'
 import BottomNav from './components/layout/BottomNav'
 import Dashboard from './pages/Dashboard'
 import Transactions from './pages/Transactions'
 import Analytics from './pages/Analytics'
 import Settings from './pages/Settings'
+import JoinWorkspacePage from './pages/JoinWorkspacePage'
 import AddTransactionModal from './components/modals/AddTransactionModal'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import './i18n'
 
+function RecurringGeneratorEffect() {
+  const { activeWorkspaceId } = useWorkspace()
+  const recurring = useRecurringTransactions()
+  const ranRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!activeWorkspaceId || recurring.length === 0) return
+    const key = `${activeWorkspaceId}-${recurring.map(r => r.id).join(',')}`
+    if (ranRef.current === key) return
+    ranRef.current = key
+    generateRecurringTransactions(activeWorkspaceId, recurring).catch(console.error)
+  }, [activeWorkspaceId, recurring])
+
+  return null
+}
+
 function AppLayout() {
   const [showAdd, setShowAdd] = useState(false)
 
   return (
     <div className="max-w-lg mx-auto min-h-screen bg-bg-subtle">
+      <RecurringGeneratorEffect />
       <Header />
       <main className="pb-nav">
         <Routes>
@@ -26,7 +47,7 @@ function AppLayout() {
           <Route path="/transactions" element={<Transactions />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/join" element={<div className="p-6 font-sans text-text">Workspace beitreten (kommt)</div>} />
+          <Route path="/join" element={<JoinWorkspacePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

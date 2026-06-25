@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useWorkspace } from '../contexts/WorkspaceContext'
 import { useMonthTransactions, useCategories, useTemplates, useBudgets } from '../hooks/useWorkspaceFirestore'
 import { fmt, fmtShort, fmtMonthYear, fmtDateShort } from '../lib/formatters'
+import AddTransactionModal from '../components/modals/AddTransactionModal'
 import type { Template } from '../types'
 
 export default function Dashboard() {
@@ -23,7 +24,7 @@ export default function Dashboard() {
   const budgets = useBudgets()
 
   const [catView, setCatView] = useState<'compare' | 'budget'>('compare')
-  const [_templateModal, setTemplateModal] = useState<Template | null>(null)
+  const [templateModal, setTemplateModal] = useState<Template | null>(null)
 
   function prevMonth() {
     if (month === 0) { setYear(y => y - 1); setMonth(11) }
@@ -205,6 +206,10 @@ export default function Dashboard() {
             })}
           </div>
         </div>
+      )}
+
+      {templateModal && (
+        <AddTransactionModal template={templateModal} onClose={() => setTemplateModal(null)} />
       )}
 
       {!loading && transactions.length === 0 && (

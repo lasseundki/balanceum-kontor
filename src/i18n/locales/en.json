@@ -35,6 +35,16 @@
     "personal": "Personal", "family": "Family", "business": "Business",
     "switch": "Switch workspace", "create": "Create new workspace",
     "myKontor": "My Kontor",
+    "newName": "Workspace name",
+    "newNamePlaceholder": "e.g. Smith Family",
+    "createSuccess": "Workspace created!",
+    "join": "Join",
+    "joinTitle": "Join workspace",
+    "joinCode": "Invite code",
+    "joinCodePlaceholder": "e.g. A3X9K2",
+    "joinCodeError": "Invalid or expired code",
+    "joining": "Joining...",
+    "currency": "Currency",
     "roles": {
       "owner": "Owner", "admin": "Admin",
       "member": "Member", "viewer": "Viewer"
@@ -95,6 +105,38 @@
     "catTypeBoth": "Both",
     "noCategories": "No categories",
     "noPaymentMethods": "No payment methods"
+  },
+  "members": {
+    "title": "Members",
+    "labelMembers": "Label members",
+    "addLabel": "Add label member",
+    "none": "No label members",
+    "relation": "Relation (e.g. Child, Partner)",
+    "namePlaceholder": "Name"
+  },
+  "budget": {
+    "title": "Budgets",
+    "perMonth": "per month",
+    "none": "No budget",
+    "hint": "Set budget for category"
+  },
+  "template": {
+    "title": "Quick entries",
+    "add": "Add quick entry",
+    "none": "No quick entries",
+    "name": "Label (e.g. Rent)"
+  },
+  "recurring": {
+    "title": "Fixed costs",
+    "add": "Add fixed cost",
+    "none": "No fixed costs set up",
+    "frequency": "Frequency",
+    "startDate": "Start date",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "since": "since"
   },
   "analytics": {
     "yearView": "Year",

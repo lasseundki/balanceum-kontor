@@ -1,6 +1,6 @@
-import { collection, doc, writeBatch } from 'firebase/firestore'
+import { collection, doc, writeBatch, getDoc, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../firebase/config'
-import type { Workspace, WorkspaceMember, UserWorkspaceMembership, Category, PaymentMethod, LabelMember } from '../types'
+import type { Workspace, WorkspaceMember, UserWorkspaceMembership, Category, PaymentMethod, LabelMember, WorkspaceType, WorkspaceRole } from '../types'
 
 const DEFAULT_CATEGORIES: Omit<Category, 'id'>[] = [
   { name: 'Wohnen',      icon: '🏠', color: '#7BA89B', type: 'expense', order: 0 },
@@ -64,4 +64,65 @@ export async function createPersonalWorkspace(uid: string, displayName: string):
 
   await batch.commit()
   return wsId
+}
+
+export async function createWorkspace(
+  uid: string,
+  displayName: string,
+  name: string,
+  type: WorkspaceType,
+  currency: string,
+): Promise<string> {
+  const wsRef = doc(collection(db, 'workspaces'))
+  const wsId = wsRef.id
+  const now = Date.now()
+  const batch = writeBatch(db)
+
+  const workspace: Omit<Workspace, 'id'> = {
+    name, type, currency, createdBy: uid, createdAt: now,
+    settings: { language: 'de', firstDayOfWeek: 1 },
+  }
+  batch.set(wsRef, workspace)
+  batch.set(doc(db, 'workspaces', wsId, 'members', uid), { uid, role: 'owner', displayName, joinedAt: now } as WorkspaceMember)
+  batch.set(doc(collection(db, 'workspaces', wsId, 'labelMembers')), { name: 'Ich', relation: 'Ich', isMe: true } as Omit<LabelMember, 'id'>)
+  batch.set(doc(db, 'users', uid, 'workspaces', wsId), { workspaceId: wsId, role: 'owner', name, type, currency, joinedAt: now } as UserWorkspaceMembership)
+  for (const cat of DEFAULT_CATEGORIES) {
+    batch.set(doc(collection(db, 'workspaces', wsId, 'categories')), cat)
+  }
+  for (const pm of DEFAULT_PAYMENT_METHODS) {
+    batch.set(doc(collection(db, 'workspaces', wsId, 'paymentMethods')), pm)
+  }
+  await batch.commit()
+  return wsId
+}
+
+export async function joinWorkspaceByCode(
+  uid: string,
+  displayName: string,
+  code: string,
+): Promise<{ wsId: string; wsName: string } | { error: string }> {
+  const codesRef = collection(db, 'inviteCodes')
+  const q = query(codesRef, where('code', '==', code.trim().toUpperCase()))
+  const snap = await getDocs(q)
+  if (snap.empty) return { error: 'code_not_found' }
+
+  const invite = snap.docs[0].data()
+  if (invite.expiresAt < Date.now()) return { error: 'code_expired' }
+
+  const wsId: string = invite.workspaceId
+  const wsDoc = await getDoc(doc(db, 'workspaces', wsId))
+  if (!wsDoc.exists()) return { error: 'workspace_not_found' }
+
+  const ws = wsDoc.data() as Workspace
+  const role: WorkspaceRole = invite.role ?? 'member'
+  const now = Date.now()
+
+  const batch = writeBatch(db)
+  batch.set(doc(db, 'workspaces', wsId, 'members', uid), { uid, role, displayName, joinedAt: now } as WorkspaceMember)
+  batch.set(doc(db, 'users', uid, 'workspaces', wsId), {
+    workspaceId: wsId, role, name: ws.name, type: ws.type, currency: ws.currency, joinedAt: now,
+  } as UserWorkspaceMembership)
+  await batch.commit()
+
+  return { wsId, wsName: ws.name }
 }

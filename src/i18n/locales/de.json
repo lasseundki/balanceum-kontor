@@ -96,6 +96,57 @@
     "noCategories": "Keine Kategorien",
     "noPaymentMethods": "Keine Zahlungsmethoden"
   },
+  "workspace": {
+    "personal": "Persönlich", "family": "Familie", "business": "Geschäft",
+    "switch": "Kontor wechseln", "create": "Neues Kontor erstellen",
+    "myKontor": "Mein Kontor",
+    "newName": "Kontor-Name",
+    "newNamePlaceholder": "z.B. Familie Müller",
+    "createSuccess": "Kontor erstellt!",
+    "join": "Beitreten",
+    "joinTitle": "Kontor beitreten",
+    "joinCode": "Einladungscode",
+    "joinCodePlaceholder": "z.B. A3X9K2",
+    "joinCodeError": "Code ungültig oder abgelaufen",
+    "joining": "Beitreten...",
+    "currency": "Währung",
+    "roles": {
+      "owner": "Eigentümer", "admin": "Admin",
+      "member": "Mitglied", "viewer": "Betrachter"
+    }
+  },
+  "members": {
+    "title": "Mitglieder",
+    "labelMembers": "Label-Mitglieder",
+    "addLabel": "Label-Mitglied hinzufügen",
+    "none": "Keine Label-Mitglieder",
+    "relation": "Beziehung (z.B. Kind, Partner)",
+    "namePlaceholder": "Name"
+  },
+  "budget": {
+    "title": "Budgets",
+    "perMonth": "pro Monat",
+    "none": "Kein Budget",
+    "hint": "Budget für Kategorie setzen"
+  },
+  "template": {
+    "title": "Schnelleingaben",
+    "add": "Schnelleingabe hinzufügen",
+    "none": "Keine Schnelleingaben",
+    "name": "Bezeichnung (z.B. Miete)"
+  },
+  "recurring": {
+    "title": "Fixkosten",
+    "add": "Fixkosten hinzufügen",
+    "none": "Keine Fixkosten angelegt",
+    "frequency": "Häufigkeit",
+    "startDate": "Startdatum",
+    "daily": "Täglich",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "since": "seit"
+  },
   "analytics": {
     "yearView": "Jahr",
     "monthlyOverview": "Monat",

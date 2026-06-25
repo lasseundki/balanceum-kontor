@@ -147,6 +147,22 @@ export function useTemplates() {
   return templates
 }
 
+export function useLabelMemberActions() {
+  const { activeWorkspaceId } = useWorkspace()
+
+  const addLabelMember = useCallback(async (data: Omit<LabelMember, 'id'>) => {
+    if (!activeWorkspaceId) return
+    await addDoc(wsCol(activeWorkspaceId, 'labelMembers'), data)
+  }, [activeWorkspaceId])
+
+  const deleteLabelMember = useCallback(async (id: string) => {
+    if (!activeWorkspaceId) return
+    await deleteDoc(wsDoc(activeWorkspaceId, 'labelMembers', id))
+  }, [activeWorkspaceId])
+
+  return { addLabelMember, deleteLabelMember }
+}
+
 export function useTransactionActions() {
   const { activeWorkspaceId } = useWorkspace()
 

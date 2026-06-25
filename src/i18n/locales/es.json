@@ -35,6 +35,16 @@
     "personal": "Personal", "family": "Familia", "business": "Negocio",
     "switch": "Cambiar espacio", "create": "Crear nuevo espacio",
     "myKontor": "Mi Kontor",
+    "newName": "Nombre del espacio",
+    "newNamePlaceholder": "ej. Familia García",
+    "createSuccess": "¡Espacio creado!",
+    "join": "Unirse",
+    "joinTitle": "Unirse a un espacio",
+    "joinCode": "Código de invitación",
+    "joinCodePlaceholder": "ej. A3X9K2",
+    "joinCodeError": "Código inválido o expirado",
+    "joining": "Uniéndose...",
+    "currency": "Moneda",
     "roles": {
       "owner": "Propietario", "admin": "Admin",
       "member": "Miembro", "viewer": "Espectador"
@@ -95,6 +105,38 @@
     "catTypeBoth": "Ambos",
     "noCategories": "Sin categorías",
     "noPaymentMethods": "Sin métodos de pago"
+  },
+  "members": {
+    "title": "Miembros",
+    "labelMembers": "Miembros etiqueta",
+    "addLabel": "Agregar miembro etiqueta",
+    "none": "Sin miembros etiqueta",
+    "relation": "Relación (ej. Hijo, Pareja)",
+    "namePlaceholder": "Nombre"
+  },
+  "budget": {
+    "title": "Presupuestos",
+    "perMonth": "por mes",
+    "none": "Sin presupuesto",
+    "hint": "Establecer presupuesto para categoría"
+  },
+  "template": {
+    "title": "Entradas rápidas",
+    "add": "Agregar entrada rápida",
+    "none": "Sin entradas rápidas",
+    "name": "Nombre (ej. Alquiler)"
+  },
+  "recurring": {
+    "title": "Costos fijos",
+    "add": "Agregar costo fijo",
+    "none": "Sin costos fijos configurados",
+    "frequency": "Frecuencia",
+    "startDate": "Fecha de inicio",
+    "daily": "Diario",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "since": "desde"
   },
   "analytics": {
     "yearView": "Año",

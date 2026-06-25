@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { useWorkspace } from '../../contexts/WorkspaceContext'
 import { useTranslation } from 'react-i18next'
-import { Check, User, Home, Briefcase, Plus } from 'lucide-react'
+import { Check, User, Home, Briefcase, Plus, LogIn } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import NewWorkspaceModal from '../modals/NewWorkspaceModal'
 import type { WorkspaceType } from '../../types'
 
 interface Props {
@@ -21,7 +24,9 @@ function wsColor(type: WorkspaceType): string {
 
 export default function WorkspaceSwitcherSheet({ onClose }: Props) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { workspaces, activeWorkspaceId, switchWorkspace } = useWorkspace()
+  const [showNewWs, setShowNewWs] = useState(false)
 
   const sorted = [...workspaces].sort((a, b) => {
     if (a.type === 'personal') return -1
@@ -67,13 +72,25 @@ export default function WorkspaceSwitcherSheet({ onClose }: Props) {
           })}
         </div>
 
-        <div className="border-t border-border px-3 py-2">
-          <button className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-dashed border-border hover:border-accent hover:bg-accent-light/30 transition-colors text-text-secondary hover:text-accent">
+        <div className="border-t border-border px-3 py-2 space-y-1">
+          <button
+            onClick={() => { setShowNewWs(true) }}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-dashed border-border hover:border-accent hover:bg-accent-light/30 transition-colors text-text-secondary hover:text-accent"
+          >
             <Plus size={16} />
             <span className="text-sm font-medium">{t('workspace.create')}</span>
           </button>
+          <button
+            onClick={() => { onClose(); navigate('/join') }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-bg-subtle transition-colors text-text-secondary"
+          >
+            <LogIn size={16} />
+            <span className="text-sm font-medium">{t('workspace.joinTitle')}</span>
+          </button>
         </div>
       </div>
+
+      {showNewWs && <NewWorkspaceModal onClose={() => { setShowNewWs(false); onClose() }} />}
     </>
   )
 }
