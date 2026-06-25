@@ -96,6 +96,24 @@
     "noCategories": "Sin categorías",
     "noPaymentMethods": "Sin métodos de pago"
   },
+  "analytics": {
+    "yearView": "Año",
+    "monthlyOverview": "Mes",
+    "categoryView": "Categoría",
+    "total": "Total",
+    "byCategory": "Por categoría",
+    "extraordinary": "Gastos extraordinarios",
+    "fixedCosts": "Costos fijos",
+    "fixedCostsCard": "Prom. costos fijos / mes",
+    "excludeFixed": "Ocultar costos fijos",
+    "includeFixed": "Mostrar costos fijos",
+    "outlier": "Meses atípicos",
+    "monthlyDetail": "Detalles",
+    "clickHint": "Toca una barra para ver detalles",
+    "reset": "Restablecer",
+    "selectCategory": "Selecciona una categoría",
+    "noCategoryData": "Sin datos para esta categoría"
+  },
   "nav": {
     "home": "Inicio", "list": "Lista", "analytics": "Análisis",
     "cards": "Tarjetas", "settings": "Ajustes"

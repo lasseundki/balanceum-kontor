@@ -96,6 +96,24 @@
     "noCategories": "No categories",
     "noPaymentMethods": "No payment methods"
   },
+  "analytics": {
+    "yearView": "Year",
+    "monthlyOverview": "Month",
+    "categoryView": "Category",
+    "total": "Total",
+    "byCategory": "By Category",
+    "extraordinary": "Extraordinary expenses",
+    "fixedCosts": "Fixed costs",
+    "fixedCostsCard": "Avg. fixed costs / month",
+    "excludeFixed": "Hide fixed costs",
+    "includeFixed": "Show fixed costs",
+    "outlier": "Outlier months",
+    "monthlyDetail": "Details",
+    "clickHint": "Tap a bar for details",
+    "reset": "Reset",
+    "selectCategory": "Select a category",
+    "noCategoryData": "No data for this category"
+  },
   "nav": {
     "home": "Home", "list": "List", "analytics": "Analytics",
     "cards": "Cards", "settings": "Settings"

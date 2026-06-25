@@ -6,6 +6,7 @@ import Header from './components/layout/Header'
 import BottomNav from './components/layout/BottomNav'
 import Dashboard from './pages/Dashboard'
 import Transactions from './pages/Transactions'
+import Analytics from './pages/Analytics'
 import Settings from './pages/Settings'
 import AddTransactionModal from './components/modals/AddTransactionModal'
 import LoginPage from './pages/auth/LoginPage'
@@ -23,7 +24,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/transactions" element={<Transactions />} />
-          <Route path="/analytics" element={<div className="p-6 font-sans text-text">Analyse (kommt)</div>} />
+          <Route path="/analytics" element={<Analytics />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/join" element={<div className="p-6 font-sans text-text">Workspace beitreten (kommt)</div>} />
           <Route path="*" element={<Navigate to="/" replace />} />
