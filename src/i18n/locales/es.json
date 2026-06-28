@@ -80,7 +80,8 @@
     "filterExtraordinary": "Extraordinario",
     "filterNormal": "Normal",
     "filterFixed": "Costos fijos",
-    "filterGifts": "Regalos"
+    "filterGifts": "Regalos",
+    "addedBy": "Agregado por"
   },
   "currency": {
     "select": "Seleccionar moneda",
@@ -105,6 +106,9 @@
     "catTypeBoth": "Ambos",
     "noCategories": "Sin categorías",
     "noPaymentMethods": "Sin métodos de pago",
+    "color": "Color",
+    "changePassword": "Cambiar contraseña",
+    "passwordResetSent": "¡Correo enviado!",
     "exportTitle": "Exportar datos",
     "exportBtn": "Exportar como CSV",
     "exporting": "Exportando...",
@@ -177,7 +181,21 @@
     "forecastNoData": "Datos insuficientes — se necesitan al menos 2 meses",
     "forecastCurrentOnly": "El pronóstico solo está disponible para el año actual",
     "actual": "Real",
-    "projected": "Pronóstico"
+    "projected": "Pronóstico",
+    "comparison": "Año anterior",
+    "cumulative": "Acumulado",
+    "runningBalance": "Saldo corriente"
+  },
+  "onboarding": {
+    "skip": "Omitir",
+    "next": "Siguiente",
+    "done": "¡Comenzar!",
+    "step1Title": "Bienvenido a Kontor",
+    "step1Text": "Tu espacio financiero para la vida cotidiana, familia y negocios. Mantente siempre al tanto — solo o en equipo.",
+    "step2Title": "Transacciones y análisis",
+    "step2Text": "Registra ingresos y gastos en segundos. La vista de análisis muestra tendencias, valores atípicos y una previsión anual.",
+    "step3Title": "Gestionar juntos",
+    "step3Text": "Invita a familiares o socios mediante un enlace de invitación. Todos ven las mismas transacciones en tiempo real."
   },
   "search": {
     "placeholder": "Buscar...",

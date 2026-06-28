@@ -95,10 +95,10 @@ function ColorPicker({ selected, onSelect }: { selected: string; onSelect: (c: s
 }
 
 function SortableCatItem({ cat, onEdit, onDelete, catTypeLabel }: {
-  cat: { id: string; icon: string; name: string; type: string; color?: string }
+  cat: { id: string; icon: string; name: string; type: CategoryType; color?: string }
   onEdit: () => void
   onDelete: () => void
-  catTypeLabel: (t: string) => string
+  catTypeLabel: (t: CategoryType) => string
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: cat.id })
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }

@@ -51,7 +51,10 @@ export default function OnboardingFlow({ onDone }: Props) {
 
       {/* Content */}
       <div className="flex-1 flex flex-col items-center justify-center text-center w-full max-w-sm">
-        <div className="text-7xl mb-8">{current.emoji}</div>
+        {step === 0
+          ? <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="Kontor" className="w-24 h-24 mb-8" />
+          : <div className="text-7xl mb-8">{current.emoji}</div>
+        }
         <h2 className="font-heading text-2xl font-bold text-text mb-4">{t(current.titleKey)}</h2>
         <p className="text-base text-text-secondary leading-relaxed">{t(current.textKey)}</p>
       </div>

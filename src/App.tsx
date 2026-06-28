@@ -67,9 +67,7 @@ function AppRoutes() {
     return (
       <div className="min-h-screen bg-bg-subtle flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 bg-accent rounded-xl mx-auto mb-3 flex items-center justify-center">
-            <span className="font-heading text-xl font-bold text-text-inverse">K</span>
-          </div>
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="Kontor" className="w-14 h-14 mx-auto mb-3" />
           <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto mt-3" />
         </div>
       </div>

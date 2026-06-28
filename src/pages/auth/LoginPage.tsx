@@ -59,9 +59,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-bg-subtle flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-accent rounded-xl mb-4 shadow-md">
-            <span className="font-heading text-2xl font-bold text-text-inverse">K</span>
-          </div>
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="Kontor" className="w-16 h-16 mx-auto mb-4" />
           <h1 className="font-heading text-3xl font-bold text-text">Balanceum Kontor</h1>
           <p className="text-text-secondary text-sm mt-1 font-heading italic">{t('auth.tagline')}</p>
         </div>
